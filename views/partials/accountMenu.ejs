@@ -1,0 +1,60 @@
+<% if(typeof section !='undefined' && section!='dashboard' && section!='account') { %>
+<div class="row account-menu">
+<% if(accessService.checkState('dashboard','myaccount_marketdata',req)) { %>
+	<div class="col-md-3 col-sm-3">
+		<a href="/market"><div class="tile white m-b-10 <%= (section=='market'?'selected':'collapsed') %>">
+			<div class="tile-title">
+				<h4 class="no-margin m-b-10 bold">Piata la zi</h4>
+			</div>
+			<div class="tile-body">
+			</div>	
+		</div></a>
+	</div>	
+<% } %>
+<% if(accessService.checkState('dashboard','myaccount_reports',req)) { %>
+	<div class="col-md-3 col-sm-3">
+		<a href="/reports"><div class="tile white m-b-10 <%= (section=='reports'?'selected':'collapsed') %>">
+			<div class="tile-title">
+				<h4 class="no-margin m-b-10 bold">Rapoarte si statistici</h4>
+			</div>
+			<div class="tile-body">
+			</div>	
+		</div></a>
+	</div>
+<% } %>
+<% if(accessService.checkState('dashboard','myaccount_transactions',req)) { %>
+	<div class="col-md-3 col-sm-3">
+		<a href="/transactions"><div class="tile white m-b-10 <%= (section=='transactions'?'selected':'collapsed') %>">
+			<div class="tile-title">
+				<h4 class="no-margin m-b-10 bold">Tranzactiile mele</h4>
+			</div>
+			<div class="tile-body">
+			</div>	
+		</div></a>
+	</div>
+<% } %>
+	<div class="col-md-3 col-sm-3">
+		<div class="tile white m-b-10 <%= (section=='profile'?'selected':'collapsed') %>">
+			<div class="tile-title">
+				<div class="controller">
+					<a class="collapse pull-right m-l-15">&nbsp;</a>
+				</div>
+				<a href="" class="toggle" data-toggle="#profile-menu"><h4 class="no-margin m-b-10 bold">Contul meu</h4></a>
+			</div>
+			<div class="tile-body" <%= (section=='profile'?'':'style="display:none"') %> id="profile-menu">
+				<ul class="profile-menu">
+				<% if(accessService.checkState('dashboard','myaccount_whitelist',req)) { %>
+					<li><a href="/account/whitelist" class="<%= (req.target.action=='whitelist'?'bold':'') %>"><i class="fa fa-tasks"></i> Whitelist (parteneri)</a></li>
+				<% } %>
+				<% if(accessService.checkState('dashboard','myaccount_entrypoints',req)) { %>
+					<li><a href="/account/entrypoints" class="<%= (req.target.action=='entrypoints'?'bold':'') %>"><i class="fa fa-map-marker"></i> Puncte de intrare predefinite</a></li>
+				<% } %>
+				<% if(accessService.checkState('dashboard','myaccount_messages',req)) { %>
+					<li><a href="/account/notifications" class="<%= (req.target.action=='notifications'?'bold':'') %>"><i class="fa fa-comments"></i> Mesaje</a></li>
+				<% } %>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+<% } %>

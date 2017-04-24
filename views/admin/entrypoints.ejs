@@ -1,0 +1,44 @@
+    <div class="content">
+      <div class="page-title">
+		<i class="icon-custom-left"></i>
+        <h3>Puncte de intrare</h3>
+      </div>
+      <div class="row-fluid">
+        <div class="span12">
+          <div class="grid simple">
+			<div class="grid-title no-border">
+				<%- toolsService.getFlashMessage(req.flash()) %>
+				<a href="/admin/entrypoints/add" class="btn btn-white"><i class="fa fa-plus-circle"></i>&nbsp;Adauga</a>
+			</div>
+			<div class="grid-body no-border">
+				<table class="table table-hover table-condensed" id="example-table">
+					<thead>
+						<tr>
+							<th class="v-align-middle" style="width:17%">Physical Point Code</th>
+							<th class="v-align-middle" style="width:17%">Physical Point Name</th>
+							<th class="v-align-middle" style="width:17%">Virtual Point Code</th>
+							<th class="v-align-middle" style="width:17%">Virtual Point Name</th>
+							<th class="v-align-middle" style="width:17%">County Name</th>
+							<th class="v-align-middle" style="width:5%">&nbsp;</th>
+							<th class="v-align-middle" style="width:5%">&nbsp;</th>
+						</tr>
+					</thead>
+					<tbody>
+						<% if(items.length>0) { _.each(items,function(item) { %>
+						<tr>
+							<td class="v-align-middle"><%= item.PhysicalPointCode %></td>
+							<td class="v-align-middle"><%= item.PhysicalPointName %></td>
+							<td class="v-align-middle"><%= item.VirtualPointCode %></td>
+							<td class="v-align-middle"><%= item.VirtualPointName %></td>
+							<td class="v-align-middle"><%= item.CountyName %></td>
+							<td><a href="/admin/entrypoints/edit/<%= item.ID %>" class="action-icon btn btn-small btn-white" title="Modifica"><i class="fa fa-edit"></i></a></td>
+							<td><a href="/admin/entrypoints/delete/<%- item.ID %>" title="Sterge" class="action-icon delete-confirm btn btn-small btn-white"><i class="fa fa-trash-o"></i></a></td>
+						</tr>
+						<% }); } %>
+					</tbody>
+				</table>
+			</div>
+          </div>
+        </div>
+      </div>
+    </div>

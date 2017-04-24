@@ -1,0 +1,76 @@
+<div class="row">	 
+	<div class="col-md-12">
+		<div class="tile m-b-10" id="journal-container">
+			<div class="tile-title">
+				<div class="controller">
+					<a href="" class="collapse pull-right m-l-15">&nbsp;</a>
+				</div>
+				<h3 class="m-t-0">Jurnal activitate</h3>
+			</div>
+			<div class="tile-body">
+				<form class="form-no-horizontal-spacing" id="activity-form" method="" autocomplete="off">	
+					<input type="hidden" id="filter-ID_User" value="" />
+					<input type="hidden" id="filter-ID_Agency" value="" />
+					<input type="hidden" id="filter-prm_startDate" value="" />
+					<div class="row form-row no-margin">
+						<div class="form-group col-md-3 no-margin">
+							<label class="form-label">Utilizator</label>
+							<div class="input-group">
+								<select name="user" id="journal-ID_User" class="select2 form-control">
+								  <option value="">Toti utilizatorii</option>
+								  <% _.each(req.session.users,function(user) { %>
+								  <option value="<%= user.ID %>"><%= user.LoginName+' ('+user.FirstName+' '+user.LastName+')' %></option>
+								  <% }); %>
+								</select>
+							</div>
+						</div>
+						<div class="form-group col-md-3 no-margin">
+							<label class="form-label">Agentie</label>
+							<div class="input-group">
+								<select name="agency" id="journal-ID_Agency" class="select2 form-control" data-placeholder="">
+								  <option value="">Toate agentiile</option>
+								  <% _.each(req.session.agencies,function(agency) { %>
+								  <option value="<%= agency.ID %>"><%= agency.AgencyName %></option>
+								  <% }); %>
+								</select>
+							</div>
+						</div>
+						<div class="form-group col-md-2 no-margin">
+							<label class="form-label">Data inceput</label>
+							<div class="input-group">
+								<input type="text" class="form-control required datepicker" id="journal-startDate" name="startdate" data-date-format="yyyy-mm-dd" value="<%= timeService.formatDate(new Date(),'YYYY-MM-DD') %>" />
+								<span class="input-group-addon primary">		
+									<span class="arrow"></span>
+									<i class="fa fa-align-justify"></i>		
+								</span>
+							</div>
+						</div>
+						<div class="form-group col-md-2 no-margin">
+							<label class="form-label">&nbsp;</label>
+							<div class="input-group">
+						  <button class="btn btn-primary btn-cons" type="submit" id="filter-journal">Filtreaza</button>
+							</div>
+						</div>
+					</div>
+				</form>
+				<hr class="" />
+				<table class="table table-hover table-condensed" id="example-table">
+					<thead>
+						<tr>
+							<th aria-controls="example-table" aria-sort="descending">Data</th>
+							<th>Operatiune</th>
+							<th>Utilizator</th>
+							<th>Agentie</th>
+							<th>Ordin</th>
+							<th>Cantitate</th>
+							<th>Pret</th>
+							<th>Tip gaz</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>	
+		</div>	
+	</div>
+</div>

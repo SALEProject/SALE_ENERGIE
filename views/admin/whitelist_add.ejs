@@ -1,0 +1,35 @@
+    <div class="content">
+      <div class="page-title">
+		<i class="icon-custom-left"></i>
+        <h3>Motive refuzare - <span class="semi-bold">Adauga</span></h3>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="grid simple">
+            <div class="grid-title no-border">
+				<%- toolsService.getFlashMessage(req.flash()) %>
+			</div>
+            <div class="grid-body no-border">
+			<form class="form-no-horizontal-spacing" id="entrypoint-form" method="post" autocomplete="off">	
+              <div class="row">
+                <div class="col-md-12">
+					<h4>Motiv</h4>            
+                    <div class="row form-row">
+                      <div class="col-md-12">
+						<textarea name="Reason" id="Reason" class="form-control required"><%- (typeof item!='undefined' && typeof item.ID != 'undefined' ? item.Reason : '') %></textarea>
+                      </div>
+                    </div>
+                </div>
+              </div>
+				<div class="form-actions">
+					<div class="pull-left">
+					  <button class="btn btn-danger btn-cons" type="submit"><i class="icon-ok"></i> Salveaza</button>
+					  <a class="btn btn-white btn-cons" href="/admin/whitelist">Renunta</a>
+					</div>
+				  </div>
+			</form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

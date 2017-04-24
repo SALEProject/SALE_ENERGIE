@@ -1,0 +1,38 @@
+<div class="row">
+<div class="col-md-12">
+	<div class="tile white m-b-10 padding-20">
+		<div class="tile-title">
+			<div class="controller">
+				<a href="" class="collapse pull-right m-l-15">&nbsp;</a>
+			</div>
+			<h3 class="no-margin m-b-10"><%= title %></h4>
+			<%- toolsService.getFlashMessage(req.flash()) %>
+		</div>
+		<div class="tile-body">
+			<p class="p-t-20">Debifeaza numele companiilor cu care nu doresti sa efectuezi tranzactii prin sistem. Modificarile sunt salvate automat.</p>
+			<ul class="whitelist-list">
+			<% var s = 0; %>
+				<% if(items.length>0) { _.each(items,function(item) { %>
+				<li class="pull-left col-md-6 col-sm-6" <%- (s%2==0?' style="clear:left"':'') %>>
+					<div class="p-b-10">
+						<div class="controls">
+							<div class="checkbox check-default">
+								<input id="whitelist-<%= item.ID %>" name="whitelist-<%= item.ID %>" data-id="<%= item.ID %>" class="whitelist-input" type="checkbox" value="1" <% if(item.isAgreed) { %>checked=""<% } %> />
+								<label for="whitelist-<%= item.ID %>"><%= item.Name %></label>
+								<span class="blacklist-reason italic"><%- (!item.isAgreed && typeof item.Reason!='undefined'?'('+item.Reason+' - '+(item.isApproved?'<span class="color-green bold">Aprobat</span>':'<span class="bold">Neaprobat</span>')+')':'') %></span>
+							</div>
+						</div>
+					</div>
+				</li>
+				<% s++; }); } else {%>
+				<li>
+					<p class="text-center">Nici un partener disponibil.</p>
+				</li>
+				<% } %>
+			</ul>
+			<div class="clearfix"></div>
+		</div>	
+	</div>	
+</div>
+</div>
+

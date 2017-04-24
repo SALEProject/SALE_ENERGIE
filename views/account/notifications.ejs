@@ -1,0 +1,42 @@
+<div class="row">
+<div class="col-md-12">
+	<div class="tile white m-b-10 padding-20" id="notifications-container">
+		<div class="tile-title">
+			<div class="controller">
+				<a href="" class="collapse pull-right m-l-15">&nbsp;</a>
+			</div>
+			<h3 class="no-margin m-b-10"><%= title %></h4>
+			<% if(msg!='') { %>
+			<div class="alert alert-success">
+			  <button class="close" data-dismiss="alert"></button>
+			   <%= msg %>
+			</div>
+			<% } %>
+		</div>
+		<div class="tile-body">
+			<table class="table no-more-tables" id="example-table">
+				<thead>
+					<tr>
+						<th style="width:5%">&nbsp;</th>
+						<th style="width:15%">Data</th>
+						<th style="width:15%">De la</th>
+						<th>Subiect</th>
+					</tr>
+				</thead>
+				<tbody>
+					<% if(items.length>0) { _.each(items.reverse(),function(item) { %>
+					<tr class="notification notification-<%= item.ID %> <%= (item.isRead?'':'unread') %>">
+						<td class="v-align-middle"><a class="notification-action" href="/home/readnotification/<%= item.ID %>" data-id="<%= item.ID %>"><i class="fa"></a></td>
+						<td class="v-align-middle"><%= timeService.formatDate(item.Date,'DD MMM YYYY HH:mm') %></td>
+						<td class="v-align-middle"><%= (item.UserFrom?item.UserForm:'Sistem') %></td>
+						<td class="v-align-middle"><%= item.Subject %></td>
+					</tr>
+					<% }); } %>
+				</tbody>
+			</table>
+		</div>	
+		<div class="clearfix"></div>
+	</div>	
+</div>
+</div>
+

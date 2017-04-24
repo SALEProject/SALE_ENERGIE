@@ -1,0 +1,83 @@
+<div class="row">
+<div class="col-md-12">
+	<div class="tile white m-b-10 padding-20">
+		<div class="tile-title">
+			<div class="controller">
+				<a href="" class="collapse pull-right m-l-15">&nbsp;</a>
+			</div>
+			<h3 class="m-t-0 m-b-10"><%= title %></h4>
+			<% if(msg!='') { %>
+			<div class="alert alert-success">
+			  <button class="close" data-dismiss="alert"></button>
+			   <%= msg %>
+			</div>
+			<% } %>
+		</div>
+		<div class="tile-body p-t-20">
+			<form class="form-no-horizontal-spacing" id="reports-form" method="post" autocomplete="off">	
+				<div class="row form-row">
+					<div class="form-group col-md-2">
+						<label class="form-label">Tip raport</label>
+							<select name="ReportType" id="ReportType" class="">
+							  <% _.each(reporttypes,function(type) { %>
+							  <option value="<%= type.ReportName %>" <%- (req.param('ReportType') && req.param('ReportType')==type.ReportName?'selected=""':'') %> /><%- type.ReportName %></option>
+							  <% }); %>
+							</select>
+					</div>
+					<div class="form-group col-md-2">
+						<label class="form-label">Data inceput</label>
+						<div class="input-group">
+							<input type="text" class="form-control required" id="report_StartDate" name="StartDate" data-date-format="yyyy-mm-dd" value="<%- req.param('StartDate') %>" />
+							<span class="input-group-addon primary">		
+								<span class="arrow"></span>
+								<i class="fa fa-align-justify"></i>		
+							</span>
+						</div>
+					</div>
+					<div class="form-group col-md-2">
+						<label class="form-label">Data final</label>
+						<div class="input-group">
+							<input type="text" class="form-control required" id="report_EndDate" name="EndDate" data-date-format="yyyy-mm-dd" value="<%- req.param('EndDate') %>" />
+							<span class="input-group-addon primary">		
+								<span class="arrow"></span>
+								<i class="fa fa-align-justify"></i>		
+							</span>
+						</div>
+					</div>
+					<div class="form-group col-md-2">
+						<label class="form-label">&nbsp;</label>
+						<div class="clearfix"></div>
+						<div class="pull-left">
+							<button class="btn btn-danger btn-cons" type="submit">Vizualizare</button>
+						</div>
+					</div>
+                </div>
+			</form>
+			<div class="clearfix"></div>
+			<% if(typeof table !='undefined') { %>
+			<div class="padding-20 no-border">
+				<table class="table table-hover table-condensed" id="example-table">
+					<thead>
+						<tr>
+							<% for(var i=0;i<table.length;i++) { %>
+							<th><%- table[i].Name %></th>
+							<% } %>
+						</tr>
+					</thead>
+					<tbody>
+						<% if(data.length>0) { _.each(data,function(item) { %>
+						<tr>
+							<% for(var i=0;i<table.length;i++) { %>
+							<td class="v-align-middle"><%- item[table[i].Name] %></td>
+							<% } %>
+						</tr>
+						<% }); } %>
+					</tbody>
+				</table>
+			</div>	
+			<% } %>
+		</div>	
+	</div>	
+</div>
+</div>
+

@@ -1,0 +1,139 @@
+<!-- BEGIN HEADER -->
+<div class="header navbar navbar-inverse wide">
+	<div class="container">
+		<!-- BEGIN TOP NAVIGATION BAR -->
+		<div class="navbar-inner">
+			<!-- BEGIN LOGO -->
+			<a href="/" class="pull-left"><img src="/img/logo.png" class="logo" alt=""  data-src="/img/logo.png" width="125" height="125"/></a>
+			<!-- END LOGO -->
+			
+			<!-- BEGIN MAIN HEADER -->
+			<div class="header-quick-nav" >
+				<!-- BEGIN USER MENU -->
+				<div class="pull-left top-section">
+					<ul class="nav second-menu">
+					<% if(accessService.checkState('dashboard','dashboard',req)) { %>
+						<li class="">
+							<a href="/" class="<%= ((req.target.action=='index' && req.target.controller=='home')?'selected':'') %>"><i class="fa fa-bookmark"></i>&nbsp;&nbsp;Ordinele mele</a>
+						</li>
+					<% } %>
+					<% if(accessService.checkState('dashboard','myaccount_marketdata',req)) { %>
+						<li class="">
+							<a href="/market" class="<%= ((req.target.action=='index' && req.target.controller=='market')?'selected':'') %>"><i class="fa fa-bar-chart-o"></i>&nbsp;&nbsp;Piata la zi</a>
+						</li>
+					<% } %>
+					<% if(accessService.checkState('dashboard','myaccount_reports',req)) { %>
+						<li class="">
+							<a href="/reports" class="<%= ((req.target.action=='index' && req.target.controller=='reports')?'selected':'') %>"><i class="fa fa-align-right"></i>&nbsp;&nbsp;Rapoarte si statistici</a>
+						</li>
+					<% } %>
+					<% if(accessService.checkState('dashboard','myaccount_transactions',req)) { %>
+						<li class="">
+							<a href="/transactions" class="<%= ((req.target.action=='index' && req.target.controller=='transactions')?'selected':'') %>"><i class="fa fa-bars"></i>&nbsp;&nbsp;Tranzactii incheiate</a>
+						</li>
+					<% } %>
+					</ul>
+				</div>
+   				<!-- END USER MENU -->
+				
+				<!-- BEGIN STATS -->
+				<div class="pull-left top-section">
+					<div class="pull-left session-stats">
+					<% if(req.session.ring && !toolsService.isEmpty(req.session.ring)) { %>
+						<table border="0" cell-padding="0" class="pull-right" id="session-stats">
+							<tbody>
+								<tr>
+									<td>
+										<div class="stats-value"><%= formatService.numeral(req.session.ring.OpeningPrice).format('0,0.00') %></div>
+										<div class="stats-unit">Lei/MWh</div>
+									</td>
+									<td class="v-align-top">
+										<div class="stats-label pull-left">pret<br/>deschidere</div>
+									</td>
+									<td>
+										<div class="stats-value"><%= (req.session.ring.TotalVolume>1000000000 ? formatService.numeral(req.session.ring.TotalVolume/1000000000).format('0,0.00')+' mld':formatService.numeral(req.session.ring.TotalVolume).format('0,0')) %></div>
+										<div class="stats-unit">MWh</div>
+									</td>
+									<td class="v-align-top">
+										<div class="stats-label pull-left">Volum total<br/>tranzactionat</div>
+									</td>
+									<td>
+										<div class="stats-value"><%= req.session.ring.TransactionsCount %></div>
+										<div class="stats-unit"></div>
+									</td>
+									<td class="v-align-top">
+										<div class="stats-label pull-left"><%- (req.session.ring.TransactionsCount==1?'tranzactie<br/>incheiata':'tranzactii<br/>incheiate') %></div>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<div class="stats-value"><%= formatService.numeral(req.session.ring.ClosingPrice*1).format('0,0.00') %></div>
+										<div class="stats-unit">Lei/MWh</div>
+									</td>
+									<td class="v-align-top">
+										<div class="stats-label pull-left">ultimul<br/>pret</div>
+									</td>
+									<td>
+										<div class="stats-value"><%= (req.session.ring.TotalValue>1000000000 ? formatService.numeral(req.session.ring.TotalValue/1000000000).format('0,0.00')+' mld':formatService.numeral(req.session.ring.TotalValue).format('0,0')) %></div>
+										<div class="stats-unit">Lei</div>
+									</td>
+									<td class="v-align-top">
+										<div class="stats-label pull-left">Valoare totala<br/>tranzactionata</div>
+									</td>
+									<td>
+										<div class="stats-value"><%= eventService.getActiveOrdersCount() %></div>
+										<div class="stats-unit"></div>
+									</td>
+									<td class="v-align-top">
+										<div class="stats-label pull-left">ordine<br/>active</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="pull-left">
+							<p class="no-margin">Sedinta <strong id="session-status"><%= toolsService.getRingStatus(req.session.ring.Status) %></strong></p>
+							<div class="stats-value pull-left" id="time-container"><span id="server-time" class=""></span></div>
+						</div>
+						<div class="clearfix"></div>
+					<% } %>
+					</div>
+					<div class="pull-left" id="alerts-container">
+						<div class="popover alert fade in" id="alerts-popup">
+							<div class="popover-content">
+								<ul id="alerts-list"></ul>
+							</div>
+						</div>
+						<div id="main-alert"></div>
+					</div>
+				</div>
+				<!-- END STATS -->
+
+				<!-- BEGIN USER ACCOUNT -->
+				<div class="pull-left top-section account">
+					<p class="user-info"><%= req.session.currentUser.FirstName %> <strong><%= req.session.currentUser.LastName %></strong><br/><span class="italic"><%= req.session.currentUser.CompanyName %></span></p>
+					<div class="user-data-box">
+						<a href="/account" class="user-account-link <%= (req.target.controller=='account'?'selected':'') %>"><i class="fa fa-user"></i> Contul meu</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+						<a href="/logout" class="user-logout-link">Logout</a>
+					</div>
+					<a href="#" class="user-messages dropdown-messages" id="my-task-list" data-count="0">
+					<div class="user-details">
+						<div class="username"> <span class="badge">0</span> <span class="bold">Mesaje noi</span> </div>
+					</div>
+					</a><!-- | <a href="/account/notifications">Vezi toate</a>-->
+					<div class="popover fade bottom in" id="notification-list">
+						<div class="arrow"></div>
+						<div class="popover-content">
+							<ul class="message-list">
+							</ul>
+						</div>
+						<div class="p-b-10 text-center bold"><a href="/account/notifications">Vezi toate</a></div>
+					</div>
+				</div>
+				<!-- END USER ACCOUNT -->
+			</div>
+			<!-- END MAIN HEADER -->
+		</div>
+		<!-- END TOP NAVIGATION BAR -->
+	</div>
+</div>
+<!-- END HEADER -->

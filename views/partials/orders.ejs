@@ -1,0 +1,221 @@
+<div class="orders" id="orders-container" data-allow-add="<%= (accessService.checkOperation('dashboard_myorders','addOrder',req)?'1':'') %>" data-allow-edit="<%= (accessService.checkOperation('dashboard_myorders','editOrder',req)?'1':'') %>" data-allow-cancel="<%= (accessService.checkOperation('dashboard_myorders','cancelOrder',req)?'1':'') %>">
+	<div class="tile m-b-10">
+		<div class="tile-body order-filters">
+			<h3 id="orders-title" class="m-t-0 m-b-0 pull-left">Ordinele mele</h3>
+						<div class="add-order pull-left m-l-20">
+							<% if(accessService.checkOperation('dashboard_myorders','addOrder',req)) { %>
+							<div class="btn-group">
+								<a href="#" class="btn btn-primary btn-cons dropdown-toggle no-margin" data-toggle="dropdown">Adauga ordin nou <span class="caret"></span> </a>
+								<ul class="dropdown-menu dropdown-primary">
+									<li><a href="/orders/add?type=sell" class="add-order-button" data-type="S">Vanzare</a></li>
+									<li><a href="/orders/add?type=buy" class="add-order-button" data-type="B">Cumparare</a></li>
+								</ul>
+							</div>
+							<% } %>
+						</div>
+						<!--
+				<div class="row no-margin">
+					<div class="col-md-4 no-padding">
+					</div>
+					<div class="col-md-3 no-padding">
+					</div>
+					<div class="col-md-5 no-padding">
+						<label class="font-small">Perioada</label>
+					</div>
+				</div>
+				<div class="row no-margin">
+					<div class="col-md-4 no-padding">
+						<div class="add-order pull-left">
+							<div class="btn-group">
+								<% if(accessService.checkOperation('dashboard_myorders','addOrder',req)) { %>
+								<a href="#" class="btn btn-primary btn-cons dropdown-toggle no-margin" data-toggle="dropdown">Adauga ordin nou <span class="caret"></span> </a>
+								<ul class="dropdown-menu dropdown-primary">
+									<li><a href="/orders/add?type=sell" class="add-order-button" data-type="S">Vanzare</a></li>
+									<li><a href="/orders/add?type=buy" class="add-order-button" data-type="B">Cumparare</a></li>
+								</ul>
+								<% } %>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-3 no-padding">
+						<div class="checkbox check-default pull-left">
+							<input id="checkbox1" type="checkbox" value="1" checked="" disabled="" />
+							<label for="checkbox1">Afiseaza doar ordine active</label>
+						</div>
+					</div>
+					<div class="col-md-5 no-padding">
+						<div class="input-append success date pull-left m-r-15">
+							<input type="text" class="form-control datepicker">
+							<i class="fa fa-clock-o"></i>
+						</div>
+						<div class="input-append success date pull-left">
+							<input type="text" class="form-control datepicker">
+							<i class="fa fa-clock-o"></i>
+						</div>
+					</div>
+				</div>
+				-->
+				<div class="clearfix"></div>
+		</div>
+	</div>
+	<div class="orders-list" id="orders-list">
+		<div class="text-center padding-20"><img src="/img/loader-grey.gif"></div>
+	</div>
+</div>	
+<div class="orders" id="order-form-container" style="display:none">
+	<div class="tile m-b-10">
+		<div class="tile-title">
+			<h3 class="no-margin m-b-10 bold"><span class="order-action-title">Adauga</span> ordin de <span class="order-direction-holder"></span></h3>
+			<br/>
+		</div>
+		<div class="tile-body">
+			<form class="my-form" id="order-form" method="post">	
+				<input type="hidden" id="order-Direction" name="Direction" value="" />
+				<input type="hidden" id="order-ID" name="ID" value="" />
+				<div class="row no-margin form-row">
+					<div class="form-group col-md-4">
+						<label class="form-label">Cantitate</label>
+						<div class="controls">
+							<input type="text" class="form-control required bold numeric" min="1" step="1" name="Quantity" id="order-Quantity" tabindex="1" data-a-sep="." data-a-dec="," data-m-dec="3" data-l-zero="deny" />
+							<span class="input-placeholder muted">MWh</span>
+						</div>
+					</div>
+					<div class="form-group col-md-4 col-md-offset-1">
+						<label class="form-label">Pret</label>
+						<div class="controls">
+							<input type="text" class="form-control required bold numeric" min="1" step="any" name="Price" id="order-Price" tabindex="2" data-a-sep="." data-a-dec="," data-l-zero="deny" />
+							<span class="input-placeholder muted">Lei</span>
+						</div>
+					</div>
+				</div>
+				<div class="row no-margin form-row">
+					<div class="form-group col-md-4">
+						<label class="form-label">Inceput <span class="muted">(Ora 6:00)</span></label>
+						<div class="input-group">
+							<input type="text" class="form-control required" id="order-StartDeliveryDate" name="StartDeliveryDate" tabindex="3" data-date-format="dd M yyyy" />
+							<span class="input-group-addon primary">		
+								<span class="arrow"></span>
+								<i class="fa fa-align-justify"></i>		
+							</span>
+						</div>
+					</div>
+					<div class="form-group col-md-4 col-md-offset-1">
+						<label class="form-label">Sfarsit <span class="muted">(Ora 6:00)</span></label>
+						<div class="input-group">
+							<input type="text" class="form-control required" id="order-EndDeliveryDate" name="EndDeliveryDate" tabindex="4" data-date-format="dd M yyyy" />
+							<span class="input-group-addon primary">		
+								<span class="arrow"></span>
+								<i class="fa fa-align-justify"></i>		
+							</span>
+						</div>
+					</div>
+				</div>
+				<div class="row no-margin form-row">
+					<div class="form-group col-md-9">
+						<label class="form-label">Sursa</label>
+						<div class="form-row">
+							<select name="ID_GNType" id="ID_GNType" class="">
+							  <% _.each(gntypes,function(type) { %>
+							  <option value="<%= type.ID %>" /><%= type.Name+' ('+type.Code+')' %></option>
+							  <% }); %>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="form-group form-row row no-margin combinationsAccepted-holder">
+					<div class="form-group col-md-10">
+						<div class="controls">
+							<div class="checkbox check-default">
+								<input id="order-CombinationsAccepted" name="CombinationsAccepted" type="checkbox" value="1" />
+								<label for="order-CombinationsAccepted">Accept tranzactionare fractionata</label>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group form-row row no-margin doNotifyPartners-holder">
+					<div class="form-group col-md-10">
+						<div class="controls">
+							<div class="checkbox check-default">
+								<input id="order-doNotifyPartners" name="doNotifyPartners" type="checkbox" value="1" />
+								<label for="order-doNotifyPartners">Doresc sa fie notificati partenerii mei agreati</label>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row no-margin form-row entryPoints-holder">
+					<h4>Puncte de intrare</h4>
+					<div class="form-group" style="display:none">
+						<label class="form-label">Introdu punctele de livrare separate cu virgula si confirma pentru a continua</label>
+						<div class="col-md-9">
+							<div class="controls">
+								<textarea id="EntryPoints" name="EntryPoints" style="width:100%" rows="5"></textarea>
+							</div>
+						</div>
+						<div class="col-md-3">
+							<a class="btn btn-info" id="validate-entrypoints">Confirma</a>
+						</div>
+					</div>
+					<div class="clearfix"></div>
+					<div class="form-group">
+						<div class="col-md-12">
+							<!--<span>sau</span>&nbsp;&nbsp;--><a id="entrypoints-picker" class="btn btn-success" href="#entrypoints-container">Selecteaza punctele de intrare</a>
+						</div>
+					</div>
+					<div class="clearfix"></div>
+					<div style="display:none">
+						<div id="entrypoints-container"">
+							<div class="row no-margin">
+								<div class="col-md-12">
+									<div class="entrypoints-list" id="entrypoints-list-checkbox">
+										<div class="text-center padding-20"><img src="/img/loader-white.gif"></div>
+									</div>
+								</div>
+							</div>
+							<div class="row no-margin">
+								<div class="col-md-12">
+									<div class="p-t-20 text-center">
+										<button class="btn btn-primary btn-cons entrypoints-fancy-save">Salveaza</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<ul class="entrypoints-list" id="entrypoints-list">
+					</ul>
+				</div>
+				<div class="row no-margin form-row p-b-20">
+					<div id="precheck-container" class="col-md-12" style="clear:both;display:none">
+						<ul class="market-order-list">
+							<li>
+								<div class="market-order-col-header col-status" data-col="col-status">Data</div>
+								<div class="market-order-col-header col-type" data-col="col-type">Tip</div>
+								<div class="market-order-col-header col-type2" data-col="col-type2">Sursa</div>
+								<div class="market-order-col-header col-date" data-col="col-date">Perioada</div>
+								<div class="market-order-col-header col-quantity" data-col="col-quantity">Cantitate</div>
+								<div class="market-order-col-header col-price" data-col="col-price">Pret</div>
+							</li>
+						</ul>
+						<div class="clearfix"></div>
+						<ul class="market-order-list" id="precheck-list">
+							<li>
+								<div class="text-center padding-20"><img src="/img/loader-white.gif"></div>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="row no-margin form-row">
+					<div class="col-md-12">
+						<div class="p-b-20">
+							<a class="" id="precheck" href=""><i class="fa fa-exchange"></i> Sugestii Tranzactii</a>
+						</div>
+						<div class="pull-left">
+							<button class="btn btn-primary btn-cons" type="submit" id="order-submit">Lanseaza Ordinul</button>
+							<button class="btn btn-cancel btn-cons" id="order-cancel">Renunta</a>
+						</div>
+					</div>
+				</div>
+			</form>
+			<div class="clearfix"></div>
+		</div>
+	</div>
+</div>	

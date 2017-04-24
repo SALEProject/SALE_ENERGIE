@@ -1,0 +1,143 @@
+    <div class="content">
+      <div class="page-title"> <i class="icon-custom-left"></i>
+        <h3><%- (req.param('id')?'Modificare':'Adaugare') %> utilizator</h3>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="grid simple">
+            <div class="grid-title no-border">
+				<%- toolsService.getFlashMessage(req.flash()) %>
+			</div>
+            <div class="grid-body no-border">
+			<form class="form-no-horizontal-spacing" id="user-form" method="post" autocomplete="off">	
+              <div class="row column-seperation">
+                <div class="col-md-6">
+                  <h4>Detalii autentificare</h4>            
+                    <div class="row form-row">
+                      <div class="col-md-12">
+						<label for="LoginName">Username</label>
+						<div class="widget-col">
+							<input name="LoginName" id="LoginName" type="text" class="form-control required" value="<%- (typeof item!='undefined'?item.LoginName:'') %>" />
+						</div>
+                      </div>
+                    </div>
+                    <div class="row form-row">
+                      <div class="col-md-6">
+						<label for="LoginPassword">Parola</label>
+						<div class="widget-col">
+							<input name="LoginPassword" id="LoginPassword" type="password" class="form-control" value="" />
+						</div>
+                      </div>
+                      <div class="col-md-6">
+						<label for="LoginPasswordConfirm">Confirmare parola</label>
+						<div class="widget-col">
+							<input name="LoginPasswordConfirm" id="LoginPasswordConfirm" type="password" class="form-control" rel="#LoginPassword" value="" />
+						</div>
+                      </div>
+                    </div>
+					<br />
+                  <h4>Informatii personale</h4>            
+                    <div class="row form-row">
+                      <div class="col-md-6">
+						<label for="FirstName">Prenume</label>
+						<div class="widget-col">
+							<input name="FirstName" id="FirstName" type="text"  class="form-control required" value="<%- (typeof item!='undefined'?item.FirstName:'') %>" />
+						</div>
+                      </div>
+                      <div class="col-md-6">
+						<label for="LastName">Nume</label>
+						<div class="widget-col">
+							<input name="LastName" id="LastName" type="text"  class="form-control required" value="<%- (typeof item!='undefined'?item.LastName:'') %>" />
+						</div>
+                      </div>
+                    </div>
+                    <div class="row form-row">
+                      <div class="col-md-12">
+						<label for="Email">Email</label>
+						<div class="widget-col">
+							<input name="Email" id="Email" type="email"  class="form-control required" value="<%- (typeof item!='undefined'?item.Email:'') %>" />
+						</div>
+                      </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+				
+                  <h4>Date contact</h4>
+                  
+                    <div class="row form-row">
+                      <div class="col-md-12">
+						<label for="Address">Adresa</label>
+						<div class="widget-col">
+							<input name="Address" id="Address" type="text"  class="form-control" value="<%- (typeof item!='undefined'?item.Address:'') %>" />
+						</div>
+                      </div>
+                    </div>
+                    <div class="row form-row">
+                      <div class="col-md-6">
+						<label for="City">Oras</label>
+						<div class="widget-col">
+							<input name="City" id="City" type="text"  class="form-control" value="<%- (typeof item!='undefined'?item.City:'') %>" />
+						</div>
+                      </div>
+                      <div class="col-md-6">
+						<label for="State">Judet</label>
+						<div class="widget-col">
+							<input name="State" id="State" type="text"  class="form-control" value="<%- (typeof item!='undefined'?item.State:'') %>" />
+						</div>
+                      </div>
+                    </div>
+                    <div class="row form-row">
+                      <div class="col-md-8">
+						<label for="Country">Tara</label>
+						<div class="widget-col">
+							<input name="Country" id="Country" type="text"  class="form-control" value="<%- (typeof item!='undefined'?item.Country:'') %>" />
+						</div>
+                      </div>
+                      <div class="col-md-4">
+						<label for="PostalCode">Cod postal</label>
+						<div class="widget-col">
+							<input name="PostalCode" id="PostalCode" type="text" class="form-control" value="<%- (typeof item!='undefined'?item.PostalCode:'') %>" />
+						</div>
+                      </div>
+                    </div>
+					
+				
+                  <h4>Date acces</h4>
+                  
+                    <div class="row form-row">
+                      <div class="col-md-6">
+						<label for="ID_Agency">Agentie</label>
+						<div class="widget-col">
+							<select name="ID_Agency" id="ID_Agency" class="select2 form-control">
+							  <% _.each(req.session.agencies,function(agency) { %>
+							  <option value="<%= agency.ID %>" <%-((typeof item!='undefined' && item.ID_Agency==agency.ID)?'selected=""':'') %> /><%= agency.AgencyName %></option>
+							  <% }); %>
+							</select>
+						</div>
+                      </div>
+                      <div class="col-md-6">
+						<label for="ID_UserRole">Rol</label>
+						<div class="widget-col">
+								<% var itemRoles = typeof item!='undefined' && typeof item.ID_UserRole!='undefined' && item.ID_UserRole ? (typeof item.ID_UserRole == 'array' ? item.ID_UserRole : (item.ID_UserRole.indexOf('[')>-1 ? JSON.parse(item.ID_UserRole) : [ parseInt(item.ID_UserRole) ])) : []; %>
+							<select name="ID_UserRole" id="ID_UserRole" class="select2 form-control">
+							  <% _.each(req.session.userRoles,function(role) { %>
+							  <option value="<%= role.ID %>" <%- (itemRoles.indexOf(role.ID)>-1 ? 'selected=""' : '') %> /><%= role.Name %></option>
+							  <% }); %>
+							</select>
+						</div>
+                      </div>
+                    </div>
+                </div>
+              </div>
+				<div class="form-actions">
+					<div class="pull-left">
+					  <button class="btn btn-danger btn-cons" type="submit"><i class="icon-ok"></i> Salveaza</button>
+					  <a class="btn btn-white btn-cons" href="/admin/users">Renunta</a>
+					</div>
+				  </div>
+			</form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

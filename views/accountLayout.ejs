@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+	<meta charset="utf-8" />
+    <title><%- title %></title>
+
+    <!-- Viewport mobile tag for sensible mobile support -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+	<!-- BEGIN CORE CSS FRAMEWORK -->
+	<!--<link href="/plugins/pace/pace-theme-flash.css" rel="stylesheet" type="text/css" media="screen"/>-->
+	<link href="/plugins/boostrapv3/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+	<link href="/plugins/boostrapv3/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css"/>
+	<link href="/plugins/bootstrap-datepicker/css/datepicker.css" rel="stylesheet" type="text/css" />
+	<link href="/plugins/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css"/>
+	<link href="/css/animate.min.css" rel="stylesheet" type="text/css"/>
+	<link href="/plugins/fancybox/source/jquery.fancybox.css" rel="stylesheet" type="text/css"/>
+	<!-- END CORE CSS FRAMEWORK -->
+	<!-- BEGIN CSS TEMPLATE -->
+	<link href="/css/style.css?_t=<%= Date.now() %>" rel="stylesheet" type="text/css"/>
+	<link href="/css/responsive.css" rel="stylesheet" type="text/css"/>
+	<link href="/css/custom-icon-set.css" rel="stylesheet" type="text/css"/>
+	<!-- END CSS TEMPLATE -->
+
+  </head>
+
+	<!-- BEGIN BODY -->
+	<body class="error-body no-top wide">
+<!-- BEGIN HEADER -->
+<div class="header navbar navbar-inverse wide">
+	<div class="container">
+  <!-- BEGIN TOP NAVIGATION BAR -->
+  <div class="navbar-inner">
+      <!-- BEGIN LOGO -->
+      <a href="/" class="pull-left"><img src="/img/logo.png" class="logo" alt=""  data-src="/img/logo.png" data-src-retina="/img/logo2x.png" width="100" height="100"/></a>
+      <!-- END LOGO -->
+    <div class="header-quick-nav" >
+      <!-- BEGIN CHAT TOGGLER -->
+      <div class="pull-right top-section account">
+		<p class="user-info"><%= req.session.currentUser.FirstName %> <strong><%= req.session.currentUser.LastName %></strong> - <span><%= req.session.currentUser.CompanyName %></span></p>
+		<div class="user-data-box">
+			<a href="/account" class="user-account-link pull-left"><div class="iconset top-chat-dark pull-left"></div>Contul meu</a>
+			<a href="/logout" class="pull-left user-logout-link">Logout</a>
+		</div>
+		<a href="#" class="user-messages dropdown-messages" id="my-task-list" data-count="0">
+			<div class="user-details">
+				<div class="username"> <span class="badge badge-important">1</span> <span class="bold">Mesaje noi</span> </div>
+			</div>
+		</a> | <a href="/account/messages">Vezi toate</a>
+		<div class="popover fade bottom in" id="notification-list">
+			<div class="arrow"></div>
+			<h3 class="popover-title">Mesaje</h3>
+			<div class="popover-content">
+				<ul class="message-list">
+					<li>Mesaj 1</li>
+				</ul>
+			</div>
+		</div>
+      </div>
+      <!-- END TOP SECTION -->
+      <div class="pull-right top-section">
+        <ul class="nav second-menu">
+          <li class="">
+		    <a href="/" class=""><i class="fa fa-bookmark"></i>&nbsp;&nbsp;Ordinele mele</a>
+          </li>
+          <li class="">
+		    <a href="/market" class=""><i class="fa fa-bar-chart-o"></i>&nbsp;&nbsp;Piata la zi</a>
+          </li>
+          <li class="">
+		    <a href="/reports" class=""><i class="fa fa-align-right"></i>&nbsp;&nbsp;Rapoarte si statistici</a>
+          </li>
+          <li class="">
+		    <a href="/transactions" class=""><i class="fa fa-bars"></i>&nbsp;&nbsp;Tranzactii incheiate</a>
+          </li>
+        </ul>
+      </div>
+      <!-- END TOP SECTION -->
+      <div class="pull-right top-section session-stats">
+		<% if(req.session.ring && !toolsService.isEmpty(req.session.ring)) { %>
+        <div class="pull-right transaction-count">
+			<p class="pull-right text-left">tranzactii<br/>incheiate</p>
+			<span class="badge badge-important pull-right"><%= req.session.ring.TransactionsCount %></span>
+		</div>
+        <div class="stats-label pull-right"><strong>Lei / MWh</strong><br/>pret mediu</div>
+        <div class="stats-value pull-right"><%= req.session.ring.ClosingPrice %></div>
+        <div class="stats-label pull-right"><strong>ordine</strong><br/>active</div>
+        <div class="stats-value pull-right"><%= req.session.ring.TransactionsCount %></div>
+        <div class="stats-label pull-right"><strong>companii</strong><br/>active</div>
+        <div class="stats-value pull-right"><%= req.session.ring.TransactionsCount %></div>
+        <div class="stats-label pull-right">Sedinta<br/><strong><%= toolsService.getRingStatus(req.session.ring.Status) %></strong></div>
+		<% } %>
+      </div>
+      <div class="pull-left" id="alerts-container">
+      </div>
+      <!-- END TOP SECTION -->
+    </div>
+    <!-- END TOP NAVIGATION MENU -->
+  </div>
+  <!-- END TOP NAVIGATION BAR -->
+	</div>
+</div>
+<!-- END HEADER -->
+
+		<!-- BEGIN CONTAINER -->
+		<div class="container wide">
+			<div class="page-container row-fluid">
+				<div class="page-content">
+					<div class="content">
+						<%- partial('partials/accountMenu') %>
+						<%- body %>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- END CONTAINER -->
+
+<script>
+var b_id =<%= req.session.currentUser.ID_Broker %>;
+var c_id =<%= req.session.currentUser.ID_Client %>;
+var whitelist = [<%- req.session.whitelist %>];
+</script>
+	<script src="/plugins/jquery-1.8.3.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/js/socket.io.js"></script>
+    <script type="text/javascript" src="/js/sails.io.js"></script>
+
+	<!-- BEGIN CORE JS FRAMEWORK-->
+	<script src="/plugins/jquery-ui/jquery-ui-1.10.1.custom.min.js" type="text/javascript"></script>
+	<script src="/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	<!--<script src="/plugins/pace/pace.min.js" type="text/javascript"></script>-->
+	<script src="/plugins/jquery-unveil/jquery.unveil.min.js" type="text/javascript"></script>
+	<script src="/plugins/jquery-block-ui/jqueryblockui.js" type="text/javascript"></script>
+	<script src="/plugins/jquery-lazyload/jquery.lazyload.min.js" type="text/javascript"></script>
+	<script src="/plugins/jquery-validation/js/jquery.validate.min.js" type="text/javascript"></script>
+	<script src="/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script> 
+	<script src="/plugins/bootstrap-select2/select2.min.js" type="text/javascript"></script>
+	<script src="/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js" type="text/javascript"></script>
+	<script src="/js/moment-with-langs.min.js" type="text/javascript"></script>
+	<script src="/js/highstock.js"></script>
+	<script src="/plugins/fancybox/source/jquery.fancybox.pack.js"></script>
+	<script src="/plugins/jquery-tablesorter/jquery.tablesorter.min.js"></script>
+	<script src="/plugins/jquery-tinysort/jquery.tinysort.min.js"></script>
+	<!-- BEGIN CORE TEMPLATE JS -->
+	<script src="/js/core.js" type="text/javascript"></script>
+	<script src="/js/form_validations.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/js/app.js?_t=<%= Date.now() %>"></script>
+	<!-- END CORE TEMPLATE JS -->
+
+    </body>
+</html>

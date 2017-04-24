@@ -1,0 +1,42 @@
+<div class="row">
+<div class="col-md-12">
+	<div class="tile white m-b-10 padding-20">
+		<div class="tile-title">
+			<div class="controller">
+				<a href="" class="collapse pull-right m-l-15">&nbsp;</a>
+			</div>
+			<h3 class="no-margin m-b-10"><%= title %></h4>
+			<% if(msg!='') { %>
+			<div class="alert alert-success">
+			  <button class="close" data-dismiss="alert"></button>
+			   <%= msg %>
+			</div>
+			<% } %>
+		</div>
+		<div class="tile-body">
+			<p class="p-t-20">Bifeaza punctele de intrare pe care le doresti preselectate la adaugarea unui ordin nou. Modificarile sunt salvate automat.</p>
+			<ul class="whitelist-list">
+			<% var s = 0; %>
+				<% if(items.length>0) { _.each(items,function(item) { %>
+				<li class="pull-left col-md-3 col-sm-3" <%- (s%4==0?' style="clear:left"':'') %>>
+					<div class="p-b-10">
+						<div class="controls">
+							<div class="checkbox check-default">
+								<input id="entrypoint-<%= item.ID %>" name="entrypoint-<%= item.ID %>" data-id="<%= item.ID %>" class="entrypoint-input" type="checkbox" value="1" <% if(toolsService.searchIdInArray(item.ID,userItems)>-1) { %>checked=""<% } %> />
+								<label for="entrypoint-<%= item.ID %>"><%= (item.PhysicalPointCode?item.PhysicalPointCode:item.VirtualPointCode) %></label>
+							</div>
+						</div>
+					</div>
+				</li>
+				<% s++; }); } else {%>
+				<li>
+					<p class="text-center">Nici un punct de intrare disponibil.</p>
+				</li>
+				<% } %>
+			</ul>
+			<div class="clearfix"></div>
+		</div>	
+	</div>	
+</div>
+</div>
+

@@ -1,0 +1,202 @@
+    <div class="content">
+      <div class="page-title">
+		<i class="icon-custom-left"></i>
+        <h3>Parametri</h3>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="grid simple">
+            <div class="grid-title no-border">
+				<%- toolsService.getFlashMessage(req.flash()) %>
+			</div>
+            <div class="grid-body no-border">
+			<form class="form-no-horizontal-spacing" id="parameters-form" method="post" autocomplete="off">	
+				<input type="hidden" name="Code" id="Code" value="<%= parameters.Code %>" />
+              <div class="row column-seperation">
+                <div class="col-md-6">
+                  <h4>Orar</h4>            
+                    <div class="row form-row">
+						<div class="form-group col-md-6">
+							<label class="form-label">Ora pre-deschidere</label>
+							<div class="controls">
+								<div class="form-group col-md-6">
+								<input type="text" class="form-control required bold" name="PreOpeningTime" id="PreOpeningTime" value="<%= parameters.PreOpeningTime %>" placeholder="00:00" />
+								</div>
+							</div>
+						</div>
+						<div class="form-group col-md-6">
+							<label class="form-label">Ora deschidere</label>
+							<div class="controls">
+								<div class="form-group col-md-6">
+									<input type="text" class="form-control required bold" name="OpeningTime" id="OpeningTime" value="<%= parameters.OpeningTime %>" placeholder="00:00:00" />
+								</div>
+							</div>
+						</div>
+                    </div>
+                    <div class="row form-row">
+						<div class="form-group col-md-6">
+							<label class="form-label">Ora pre-inchidere</label>
+							<div class="controls">
+								<div class="form-group col-md-6">
+									<input type="text" class="form-control required bold" name="PreClosingTime" id="PreClosingTime" value="<%= parameters.PreClosingTime %>" placeholder="00:00:00" />
+								</div>
+							</div>
+						</div>
+						<div class="form-group col-md-6">
+							<label class="form-label">Ora inchidere</label>
+							<div class="controls">
+								<div class="form-group col-md-6">
+									<input type="text" class="form-control required bold" name="ClosingTime" id="ClosingTime" value="<%= parameters.ClosingTime %>" placeholder="00:00:00" />
+								</div>
+							</div>
+						</div>
+                    </div>
+										<h4>Programare pe zile</h4>            
+										<div class="row form-row">
+											<div class="col-md-3">
+												<div class="form-group">
+													<label>&nbsp;</label>
+													<div class="checkbox check-default">
+														<input id="dayMonday" name="DaysOfWeek_dayMonday" type="checkbox" value="1" <% if((typeof parameters.dayMonday!='undefined' && parameters.dayMonday) || (typeof parameters.DaysOfWeek_dayMonday!='undefined' && parameters.DaysOfWeek_dayMonday)) { %>checked=""<% } %> />
+														<label for="dayMonday">Luni</label>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-3">
+												<div class="form-group">
+													<label>&nbsp;</label>
+													<div class="checkbox check-default">
+														<input id="dayTuesday" name="DaysOfWeek_dayTuesday" type="checkbox" value="1" <% if((typeof parameters.dayTuesday!='undefined' && parameters.dayTuesday) || (typeof parameters.DaysOfWeek_dayTuesday!='undefined' && parameters.DaysOfWeek_dayTuesday)) { %>checked=""<% } %> />
+														<label for="dayTuesday">Marti</label>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-3">
+												<div class="form-group">
+													<label>&nbsp;</label>
+													<div class="checkbox check-default">
+														<input id="dayWednesday" name="DaysOfWeek_dayWednesday" type="checkbox" value="1" <% if((typeof parameters.dayWednesday!='undefined' && parameters.dayWednesday) || (typeof parameters.DaysOfWeek_dayWednesday!='undefined' && parameters.DaysOfWeek_dayWednesday)) { %>checked=""<% } %> />
+														<label for="dayWednesday">Miercuri</label>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-3">
+												<div class="form-group">
+													<label>&nbsp;</label>
+													<div class="checkbox check-default">
+														<input id="dayThursday" name="DaysOfWeek_dayThursday" type="checkbox" value="1" <% if((typeof parameters.dayThursday!='undefined' && parameters.dayThursday) || (typeof parameters.DaysOfWeek_dayThursday!='undefined' && parameters.DaysOfWeek_dayThursday)) { %>checked=""<% } %> />
+														<label for="dayThursday">Joi</label>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-3">
+												<div class="form-group">
+													<label>&nbsp;</label>
+													<div class="checkbox check-default">
+														<input id="dayFriday" name="DaysOfWeek_dayFriday" type="checkbox" value="1" <% if((typeof parameters.dayFriday!='undefined' && parameters.dayFriday) || (typeof parameters.DaysOfWeek_dayFriday!='undefined' && parameters.DaysOfWeek_dayFriday)) { %>checked=""<% } %> />
+														<label for="dayFriday">Vineri</label>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-3">
+												<div class="form-group">
+													<label>&nbsp;</label>
+													<div class="checkbox check-default">
+														<input id="daySaturday" name="DaysOfWeek_daySaturday" type="checkbox" value="1" <% if((typeof parameters.daySaturday!='undefined' && parameters.daySaturday) || (typeof parameters.DaysOfWeek_daySaturday!='undefined' && parameters.DaysOfWeek_daySaturday)) { %>checked=""<% } %> />
+														<label for="daySaturday">Sambata</label>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-3">
+												<div class="form-group">
+													<label>&nbsp;</label>
+													<div class="checkbox check-default">
+														<input id="daySunday" name="DaysOfWeek_daySunday" type="checkbox" value="1" <% if((typeof parameters.daySunday!='undefined' && parameters.daySunday) || (typeof parameters.DaysOfWeek_daySunday!='undefined' && parameters.DaysOfWeek_daySunday)) { %>checked=""<% } %> />
+														<label for="daySunday">Duminica</label>
+													</div>
+												</div>
+											</div>
+										</div>
+                </div>
+                <div class="col-md-6">
+					<h4>Validare ordine</h4>
+                    <div class="row form-row">
+						<div class="form-group col-md-6">
+							<label class="form-label">Cantitate minima</label>
+							<div class="controls">
+								<div class="form-group col-md-6">
+									<input type="number" class="form-control required bold" min="0" step="any" max="100" name="MinQuantity" id="MinQuantity" value="<%= parameters.MinQuantity %>" />
+								</div>
+								<div class="form-group col-md-6 no-padding">
+									<span class="muted"></span>
+								</div>
+							</div>
+						</div>
+						<div class="form-group col-md-6">
+							<label class="form-label">Variatia maxima a pretului</label>
+							<div class="controls">
+								<div class="form-group col-md-6">
+									<input type="number" class="form-control required bold" min="0" max="100" step="any" name="MaxPriceVariation" id="MaxPriceVariation" value="<%= parameters.MaxPriceVariation %>" />
+								</div>
+								<div class="form-group col-md-6 no-padding">
+									<span class="muted">%</span>
+								</div>
+							</div>
+						</div>
+                    </div>
+                    <div class="row form-row">
+						<div class="form-group col-md-6">
+							<label class="form-label">Incrementare cantitate</label>
+							<div class="controls">
+								<div class="form-group col-md-6">
+									<input type="number" class="form-control required bold" min="0" step="any" name="QuantityStepping" id="QuantityStepping" value="<%= parameters.QuantityStepping %>" />
+								</div>
+							</div>
+						</div>
+						<div class="form-group col-md-6">
+							<label class="form-label">Incrementare pret</label>
+							<div class="controls">
+								<div class="form-group col-md-6">
+									<input type="number" class="form-control required bold" min="0" step="any" name="PriceStepping" id="PriceStepping" value="<%= parameters.PriceStepping %>" />
+								</div>
+							</div>
+						</div>
+                    </div>
+                    <div class="row form-row">
+						<div class="form-group col-md-6">
+							<label class="form-label">Ofset data inceput livrare</label>
+							<div class="controls">
+								<div class="form-group col-md-6">
+									<input type="number" class="form-control required bold" min="0" step="1" name="StartDeliveryDateOffset" id="StartDeliveryDateOffset" value="<%= parameters.StartDeliveryDateOffset %>" />
+								</div>
+								<div class="form-group col-md-6 no-padding">
+									<span class="muted">zile</span>
+								</div>
+							</div>
+						</div>
+						<div class="form-group col-md-6">
+							<label class="form-label">Ofset data sfarsit livrare</label>
+							<div class="controls">
+								<div class="form-group col-md-6">
+									<input type="number" class="form-control required bold" min="0" step="1" name="EndDeliveryDateOffset" id="EndDeliveryDateOffset" value="<%= parameters.EndDeliveryDateOffset %>" />
+								</div>
+							</div>
+							<div class="form-group col-md-6 no-padding">
+								<span class="muted">zile</span>
+							</div>
+						</div>
+                    </div>
+                </div>
+              </div>
+				<div class="form-actions">
+					<div class="pull-left">
+					  <button class="btn btn-danger btn-cons" type="submit"><i class="icon-ok"></i> Salveaza</button>
+					  <a class="btn btn-white btn-cons" href="/admin">Renunta</a>
+					</div>
+				  </div>
+			</form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

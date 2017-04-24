@@ -1,0 +1,25 @@
+<div class="row">
+<div class="col-md-12">
+<% var lastMonth = new Date() %>
+<% lastMonth.setMonth(lastMonth.getMonth()-1) %>
+	<div class="tile white m-b-10 padding-20" id="transactions-container" data-since="<%- timeService.formatDate(lastMonth,'YYYY-MM-DD') %>">
+		<div class="tile-title">
+			<div class="controller">
+				<a href="" class="collapse pull-right m-l-15">&nbsp;</a>
+			</div>
+			<h3 class="no-margin m-b-10"><%= title %></h4>
+			<% if(msg!='') { %>
+			<div class="alert alert-success">
+			  <button class="close" data-dismiss="alert"></button>
+			   <%= msg %>
+			</div>
+			<% } %>
+		</div>
+		<div class="tile-body">
+			<div class="text-center padding-20"><img src="/img/loader-white.gif"></div>
+		</div>	
+		<div class="clearfix"></div>
+	</div>	
+</div>
+</div>
+

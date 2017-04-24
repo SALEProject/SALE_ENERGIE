@@ -1,0 +1,38 @@
+<div class="row">
+<div class="col-md-12">
+	<div class="tile white m-b-10 padding-20">
+		<div class="tile-title">
+			<div class="controller">
+				<a href="" class="collapse pull-right m-l-15">&nbsp;</a>
+			</div>
+			<h3 class="no-margin m-b-10"><%= title %></h4>
+			<% if(msg!='') { %>
+			<div class="alert alert-success">
+			  <button class="close" data-dismiss="alert"></button>
+			   <%= msg %>
+			</div>
+			<% } %>
+		</div>
+		<div class="tile-body p-t-20">
+			<div class="col-md-8" style="border:1px solid #ddd">
+				<div id="market-chart" style="width:100%;height:400px">
+				</div>
+				<div class="clearfix"></div>
+			</div>
+			<div class="col-md-4">
+				<div id="market-stats">
+					<h4>Statistici</h4>
+				<% if(req.session.ring && !toolsService.isEmpty(req.session.ring)) { %>
+					<p>Tranzactii incheiate: <strong><%- req.session.ring.TransactionsCount %></strong></p>
+					<p>Pret deschidere: <strong><%- formatService.numeral(req.session.ring.OpeningPrice).format('0,0.00') %></strong> Lei/MWh</p>
+					<p>Pret inchidere: <strong><%- formatService.numeral(req.session.ring.ClosingPrice*1).format('0,0.00') %></strong> Lei/MWh</p>
+					<p>Volum total: <strong><%- (req.session.ring.TotalVolume>1000000000 ? formatService.numeral(req.session.ring.TotalVolume/1000000000).format('0,0.00')+' mld':formatService.numeral(req.session.ring.TotalVolume).format('0,0')) %></strong> MWh</p>
+				<% } %>
+				</div>
+			</div>
+			<div class="clearfix"></div>
+		</div>	
+	</div>	
+</div>
+</div>
+

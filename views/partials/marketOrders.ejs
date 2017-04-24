@@ -1,0 +1,38 @@
+<div class="tile white m-b-10" id="market-orders-container" data-allow-add="<%= (accessService.checkOperation('dashboard_orders','addOrder',req)?'1':'0') %>">
+	<div class="tile-title">
+		<div class="controller">
+			<a href="" class="collapse pull-right m-l-15">&nbsp;</a>
+		</div>
+		<h3 class="m-t-0">Ordine in piata</h3>
+	</div>
+	<div class="tile-body">
+		<div class="market-orders-holder">
+			<ul class="market-order-list">
+				<li>
+					<div class="market-order-col-header col-id" data-col="col-id">ID</div>
+					<div class="market-order-col-header col-status" data-col="col-status">Data</div>
+					<div class="market-order-col-header col-type" data-col="col-type">Tip</div>
+					<div class="market-order-col-header col-type2" data-col="col-type">Sursa</div>
+					<div class="market-order-col-header col-date" data-col="col-date">Perioada</div>
+					<div class="market-order-col-header col-quantity" data-col="col-quantity">Cantitate</div>
+					<div class="market-order-col-header col-price" data-col="col-price">Pret</div>
+					<div class="market-order-col-header col-action">&nbsp;</div>
+				</li>
+			</ul>
+			<div class="clearfix"></div>
+			<div class="market-order-scroller" data-height="300">
+				<ul class="market-order-list" id="market-orders-list">
+					<li>
+						<div class="text-center padding-20"><img src="/img/loader-white.gif"></div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="tile white m-b-10">
+	<div class="tile-body">
+		<div id="market-chart" style="min-width:500px;height:260px">
+		</div>
+	</div>
+</div>	

@@ -1,0 +1,137 @@
+    <div class="content">
+      <div class="page-title"> <i class="icon-custom-left"></i>
+        <h3><%- (req.param('id')?'Modificare':'Adaugare') %> punct de intrare</h3>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="grid simple">
+            <div class="grid-title no-border">
+				<%- toolsService.getFlashMessage(req.flash()) %>
+			</div>
+            <div class="grid-body no-border">
+			<form class="form-no-horizontal-spacing" id="entrypoint-form" method="post" autocomplete="off">	
+              <div class="row column-seperation">
+                <div class="col-md-6">
+                  <h4><%- __('Denumire') %></h4>            
+                    <div class="row form-row">
+                      <div class="col-md-8">
+						<input name="PhysicalPointName" id="PhysicalPointName" type="text" class="form-control required" placeholder="Nume Punct Fizic" value="<%- (typeof item!='undefined'?item.PhysicalPointName:'') %>" />
+                      </div>
+                      <div class="col-md-4">
+						<input name="PhysicalPointCode" id="PhysicalPointCode" type="text" class="form-control required" placeholder="Cod Punct Fizic" value="<%- (typeof item!='undefined'?item.PhysicalPointCode:'') %>" />
+                      </div>
+                    </div>
+                    <div class="row form-row">
+                      <div class="col-md-8">
+						<input name="VirtualPointName" id="VirtualPointName" type="text" class="form-control required" placeholder="Nume Punct Virtual" value="<%- (typeof item!='undefined'?item.VirtualPointName:'') %>" />
+                      </div>
+                      <div class="col-md-4">
+						<input name="VirtualPointCode" id="VirtualPointCode" type="text" class="form-control required" placeholder="Cod Punct Virtual" value="<%- (typeof item!='undefined'?item.VirtualPointCode:'') %>" />
+                      </div>
+                    </div>
+                    <div class="row form-row">
+                      <div class="col-md-8">
+						<input name="VirtualEntryPointName" id="VirtualEntryPointName" type="text" class="form-control required" placeholder="Nume Punct Virtual de intrare" value="<%- (typeof item!='undefined'?item.VirtualEntryPointName:'') %>" />
+                      </div>
+                      <div class="col-md-4">
+						<input name="VirtualEntryPointCode" id="VirtualEntryPointCode" type="text" class="form-control required" placeholder="Cod Punct Virtual de intrare" value="<%- (typeof item!='undefined'?item.VirtualEntryPointCode:'') %>" />
+                      </div>
+                    </div>
+					<br />
+                  <h4><%- __('Pozitionare') %></h4>            
+                    <div class="row form-row">
+                      <div class="col-md-5">
+                        <input name="Locality" id="Locality" type="text"  class="form-control required" placeholder="Localitate" value="<%- (typeof item!='undefined'?item.Locality:'') %>" />
+                      </div>
+                      <div class="col-md-5">
+                        <select name="ID_County" id="ID_County" class="select2 form-control" placeholder="Judet">
+						  <% _.each(req.session.counties,function(county) { %>
+                          <option value="<%= county.ID %>" <%- ((typeof item!='undefined' && item.ID_County==county.ID)?'selected=""':'') %> /><%= county.Name %></option>
+						  <% }); %>
+                        </select>
+                      </div>
+                      <div class="col-md-2">
+                        <input name="Sector" id="Sector" type="text"  class="form-control required" placeholder="Sector" value="<%- (typeof item!='undefined'?item.Sector:'') %>" />
+                      </div>
+                    </div>
+                    <div class="row form-row">
+                      <div class="col-md-4">
+                        <input name="LowerSirutaCode" id="LowerSirutaCode" type="text"  class="form-control required" placeholder="Cod siruta inferior" value="<%- (typeof item!='undefined'?item.LowerSirutaCode:'') %>" />
+                      </div>
+                      <div class="col-md-4">
+                        <input name="UpperSirutaCode" id="UpperSirutaCode" type="text"  class="form-control required" placeholder="Cod siruta superior" value="<%- (typeof item!='undefined'?item.UpperSirutaCode:'') %>" />
+                      </div>
+                      <div class="col-md-4">
+                        <input name="TerritorialBranch" id="TerritorialBranch" type="text"  class="form-control required" placeholder="Sucursala" value="<%- (typeof item!='undefined'?item.TerritorialBranch:'') %>" />
+                      </div>
+                    </div>
+                    <div class="row form-row">
+                      <div class="col-md-6">
+                        <input name="AdjacentNetworkOperator" id="AdjacentNetworkOperator" type="text"  class="form-control required" placeholder="Operator retea adiacent" value="<%- (typeof item!='undefined'?item.AdjacentNetworkOperator:'') %>" />
+                      </div>
+                      <div class="col-md-6">
+                        <input name="AdjacentNetworkOperatorType" id="AdjacentNetworkOperatorType" type="text"  class="form-control required" placeholder="Tip operator retea adiacent" value="<%- (typeof item!='undefined'?item.AdjacentNetworkOperatorType:'') %>" />
+                      </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+				
+                  <h4><%- __('Informatii tehnice') %></h4>
+                  
+                    <div class="row form-row">
+                      <div class="col-md-6">
+                        <input name="TechnologicalMinimumPressure" id="TechnologicalMinimumPressure" type="text"  class="form-control" placeholder="Presiune minima" value="<%- (typeof item!='undefined'?item.TechnologicalMinimumPressure:'') %>" />
+                      </div>
+                      <div class="col-md-6">
+                        <input name="TechnologicalMinimumUM" id="TechnologicalMinimumUM" type="text"  class="form-control" placeholder="TechnologicalMinimumUM" value="<%- (typeof item!='undefined'?item.TechnologicalMinimumUM:'') %>" />
+                      </div>
+                    </div>
+                    <div class="row form-row">
+                      <div class="col-md-6">
+                        <input name="TechnologicalMaximumPressure" id="TechnologicalMaximumPressure" type="text"  class="form-control" placeholder="TechnologicalMaximumPressure" value="<%- (typeof item!='undefined'?item.TechnologicalMaximumPressure:'') %>" />
+                      </div>
+                      <div class="col-md-6">
+                        <input name="TechnologicalMaximumUM" id="TechnologicalMaximumUM" type="text"  class="form-control" placeholder="TechnologicalMaximumUM" value="<%- (typeof item!='undefined'?item.TechnologicalMaximumUM:'') %>" />
+                      </div>
+                    </div>
+                    <div class="row form-row">
+                      <div class="col-md-6">
+                        <input name="AnnualAverageGrossCalorificValue" id="AnnualAverageGrossCalorificValue" type="text"  class="form-control" placeholder="AnnualAverageGrossCalorificValue" value="<%- (typeof item!='undefined'?item.AnnualAverageGrossCalorificValue:'') %>" />
+                      </div>
+                      <div class="col-md-6">
+                        <input name="AnnualUM" id="AnnualUM" type="text"  class="form-control" placeholder="AnnualUM" value="<%- (typeof item!='undefined'?item.AnnualUM:'') %>" />
+                      </div>
+                    </div>
+                    <div class="row form-row">
+                      <div class="col-md-6">
+                        <input name="TechnologicalCapacity" id="TechnologicalCapacity" type="text"  class="form-control" placeholder="TechnologicalCapacity" value="<%- (typeof item!='undefined'?item.TechnologicalCapacity:'') %>" />
+                      </div>
+                      <div class="col-md-6">
+                        <input name="TechnologicalCapacityUM" id="TechnologicalCapacityUM" type="text"  class="form-control" placeholder="TechnologicalCapacityUM" value="<%- (typeof item!='undefined'?item.TechnologicalCapacityUM:'') %>" />
+                      </div>
+                    </div>
+                  <h4>Tipuri de gaze</h4>
+                    <div class="row form-row">
+					  <% _.each(req.session.gntypes,function(type) { %>
+                      <div class="col-md-6">
+						<div class="checkbox check-default">
+							<input id="GNType_<%= type.ID %>" name="GNTypes[]" type="checkbox" value="<%= type.ID %>" <% if(typeof item!='undefined' && typeof item.GNTypes!='undefined' && item.GNTypes.indexOf(type.ID)>-1) { %>checked=""<% } %> />
+							<label for="GNType_<%= type.ID %>"><%= type.Name+' ('+type.Code+')' %></label>
+						</div>
+                      </div>
+					  <% }); %>
+                    </div>
+                </div>
+              </div>
+				<div class="form-actions">
+					<div class="pull-left">
+					  <button class="btn btn-danger btn-cons" type="submit"><i class="icon-ok"></i> <%- __('Salveaza') %></button>
+					  <a class="btn btn-white btn-cons" href="/admin/entrypoints"><%- __('Renunta') %></a>
+					</div>
+				  </div>
+			</form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

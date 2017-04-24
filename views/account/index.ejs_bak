@@ -1,0 +1,76 @@
+<div class="row">
+	<div class="col-md-6">
+		<div class="tile white m-b-10">
+			<div class="tile-title">
+				<div class="controller">
+					<a href="" class="collapse pull-right m-l-15">&nbsp;</a>
+				</div>
+				<h3 class="no-margin m-b-10">Piata la zi</h4>
+			</div>
+			<div class="tile-body p-t-20">
+				<p>Tranzactii incheiate: <strong>10</strong></p>
+				<p>Pret deschidere: <strong>120</strong> Lei/MWh</p>
+				<p>Pret inchidere: <strong>150</strong> Lei/MWh</p>
+				<p>Cantitate tranzactionata: <strong>2450000</strong> MWh</p>
+				<a class="btn btn-default" href="/market">Vezi statistici</a>
+				<div class="clearfix"></div>
+			</div>	
+		</div>	
+	</div>	
+	<div class="col-md-6">
+		<div class="tile white m-b-10" id="transactions-container">
+			<div class="tile-title">
+				<div class="controller">
+					<a href="" class="collapse pull-right m-l-15">&nbsp;</a>
+				</div>
+				<h3 class="no-margin m-b-10">Tranzactiile mele</h4>
+			</div>
+			<div class="tile-body">
+				<%- partial('../partials/transactions') %>
+			</div>	
+			<a class="btn btn-default" href="/market">Istoric tranzactii</a>
+			<div class="clearfix"></div>
+		</div>	
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-6">
+		<div class="tile white m-b-10">
+			<div class="tile-title">
+				<div class="controller">
+					<a href="" class="collapse pull-right m-l-15">&nbsp;</a>
+				</div>
+				<h3 class="no-margin m-b-10">Rapoarte si statistici</h4>
+			</div>
+			<div class="tile-body">
+				<ul class="profile-menu">
+					<li><a href="#" class=""><i class="fa fa-bars"></i> Ordine</a></li>
+					<li><a href="#" class=""><i class="fa fa-bars"></i> Tranzactii</a></li>
+					<li><a href="#" class=""><i class="fa fa-bars"></i> Evolutie preturi</a></li>
+				</ul>
+				<div class="clearfix"></div>
+			</div>	
+		</div>	
+	</div>	
+	<div class="col-md-6">
+		<div class="tile white m-b-10">
+			<div class="tile-title">
+				<div class="controller">
+					<a href="" class="collapse pull-right m-l-15">&nbsp;</a>
+				</div>
+				<h3 class="no-margin m-b-10">Contul meu</h4>
+			</div>
+			<div class="tile-body">
+				<ul class="profile-menu">
+					<li><a href="" class="<%= (req.target.action=='add_user'?'bold':'') %>"><i class="fa fa-plus-circle"></i> Adauga cont nou</a></li>
+					<li><a href="" class="<%= (req.target.action=='users'?'bold':'') %>"><i class="fa fa-users"></i> Administrare conturi</a></li>
+					<li><a href="/account/whitelist" class="<%= (req.target.action=='whitelist'?'bold':'') %>"><i class="fa fa-tasks"></i> Parteneri tranzactionare</a></li>
+					<!--<li><a href="" class="<%= (req.target.action=='contact'?'bold':'') %>"><i class="fa fa-comments"></i> Contact administrator</a></li>-->
+					<!--<li><a href="" class="<%= (req.target.action=='support'?'bold':'') %>"><i class="fa fa-question-circle"></i> Suport tehnic</a></li>-->
+				</ul>
+				<div class="clearfix"></div>
+			</div>	
+		</div>	
+	</div>
+</div>
+

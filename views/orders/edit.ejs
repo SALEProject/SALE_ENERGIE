@@ -1,0 +1,111 @@
+<div class="row">	 
+		<div class="tile">
+			<div class="tile-body p-t-20 p-l-30 p-r-30">
+				<h3 class="no-margin m-b-10 bold">Adauga ordin de <% if(item.Direction=='B') { %>cumparare<% } else { %>vanzare<% } %></h3>
+				<br/>
+				<% if(msg!='') { %>
+				<div class="alert alert-success">
+				  <button class="close" data-dismiss="alert"></button>
+				   <%= msg %>
+				</div>
+				<% } %>
+				<form class="my-form p-t-20" id="order-form" method="post">
+					<input type="hidden" name="Direction" value="<%= item.Direction %>" />
+					<div class="row form-row">
+						<div class="form-group col-md-3 col-sm-3 col-xs-3">
+							<label class="form-label">Cantitate</label>
+							<div class="controls">
+								<input type="number" class="form-control required bold" min="1" step="1" name="Quantity" id="Quantity" tabindex="1" value="<%= item.Quantity %>" />
+								<span class="input-placeholder muted">MWh</span>
+							</div>
+						</div>
+						<div class="form-group col-md-5 col-sm-5 col-xs-5 col-md-offset-1 col-sm-offset-1 col-xs-offset-1">
+							<label class="form-label">Inceput</label>
+							<div class="input-group">
+								<input type="text" class="form-control datepicker required" id="StartDeliveryDate" name="StartDeliveryDate" tabindex="3" value="<%= timeService.formatDate(item.StartDeliveryDate,'D MMM YYYY') %>" />
+								<span class="input-group-addon primary">		
+									<span class="arrow"></span>
+									<i class="fa fa-align-justify"></i>		
+								</span>
+							</div>
+						</div>
+					</div>
+					<div class="row form-row">
+						<div class="form-group col-md-3 col-sm-3 col-xs-3">
+							<label class="form-label">Pret</label>
+							<div class="controls">
+								<input type="number" class="form-control required bold" min="1" step="1" name="Price" id="Price" tabindex="2" value="<%= item.Price %>" />
+								<span class="input-placeholder muted">Lei</span>
+							</div>
+						</div>
+						<div class="form-group col-md-5 col-sm-5 col-xs-5 col-md-offset-1 col-sm-offset-1 col-xs-offset-1">
+							<label class="form-label">Sfarsit</label>
+							<div class="input-group">
+								<input type="text" class="form-control datepicker required" id="EndDeliveryDate" name="EndDeliveryDate" tabindex="4" value="<%= timeService.formatDate(item.EndDeliveryDate,'D MMM YYYY') %>" />
+								<span class="input-group-addon primary">		
+									<span class="arrow"></span>
+									<i class="fa fa-align-justify"></i>		
+								</span>
+							</div>
+						</div>
+					</div>
+					<% if(item.Direction=='S') { %>
+					<div class="row form-row">
+						<div class="form-group">
+							<div class="col-md-12 col-sm-12 col-xs-12">
+								<div class="controls">
+									<div class="checkbox check-default">
+										<input id="CombinationsAccepted" name="CombinationsAccepted" type="checkbox" value="1" <%= (item.CombinationsAccepted?'checked=""':'') %>" />
+										<label for="CombinationsAccepted">Accept tranzactionare fractionata</label>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<% } %>
+					<div class="row form-row">
+						<div class="col-md-12 col-sm-12 col-xs-12">
+							<h4>Pre-check</h4>
+<div class="market-orders-holder" id="market-orders-container">
+	<ul class="market-order-list">
+		<li>
+			<div class="market-order-col-header col-type" data-col="col-type">
+				<span class="muted">Tip</span>
+			</div>
+			<div class="market-order-col-header col-date" data-col="col-date">
+				<span class="muted">Perioada</span>
+			</div>
+			<div class="market-order-col-header col-quantity" data-col="col-quantity">
+				<span class="muted">Cantitate</span>
+			</div>
+			<div class="market-order-col-header col-price" data-col="col-price">
+				<span class="muted">Pret</span>
+			</div>
+			<div class="market-order-col-header col-status" data-col="col-status">
+				<span class="muted">Status</span>
+			</div>
+		</li>
+	</ul>
+	<div class="clearfix"></div>
+	<div class="market-order-scroller" data-height="250">
+		<ul class="market-order-list" id="precheck-orders-list">
+			<li>
+				<div class="text-center padding-20"><img src="/img/loader-white.gif" /></div>
+			</li>
+		</ul>
+	</div>
+</div>
+						</div>
+					</div>
+					<div class="row form-row">
+						<div class="col-md-12 col-sm-12 col-xs-12">
+							<div class="pull-left">
+								<button class="btn btn-primary btn-cons" type="submit"><i class="icon-ok"></i>Trimite</button>
+								<a href="/" class="btn btn-cancel btn-cons">Renunta</a>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+</div>

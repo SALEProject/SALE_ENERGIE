@@ -1,0 +1,747 @@
+/**
+ * app.js
+ *
+ */
+
+var orders = [];
+var marketOrders = [];
+var chat = [];
+var transactions = [];
+var alerts = [];
+var live = true;
+
+
+ $(document).on('socketConnected',function(e) {
+	log('socketConnected !!');
+	/************** chat ************/
+	if($("#chat-container").length>0) {
+		getChatMessages(true);
+		
+		var $input = $('#chat-input');
+
+		$input.keypress(function (e) {
+			if (e.keyCode === 13) {
+				var chatToSend = $input.val();
+				
+				// TODO: lock the input, draw loading spinner
+				socket.post('/chat/post', {
+					message: chatToSend
+				}, function(response) {
+					// TODO: clear input hide loading spinner
+					$(e.currentTarget).val('');
+				});
+			}
+		});
+	}
+	
+	/********** transactions *******************/
+	if($("#transactions-container").length>0) {
+		getTransactions(true);
+	}
+	
+	/********** alerts *******************/
+	if($("#alerts-container").length>0) {
+		getAlerts(true);
+	}
+	
+	/*********** orders *********************/
+	if($("#orders-container").length>0) {
+		getOrders(true);
+		$(document).on('click','.accept-order',function (e) { 
+			if($(this).hasClass('change-order')) var msg = 'Esti sigur ca vrei sa modifici ordinul tau pentru a corespunde cu aceasta varianta?';
+			else var msg = 'Esti sigur ca vrei sa accepti aceasta varianta?';
+			if(confirm(msg)) {
+				var $el = $(this).parent().parent().parent().parent();
+				var order_id = $(this).attr('rel');
+				socket.get('/orders/accept', {id:order_id}, function(response) {
+					log(response);
+					if(response.success) {
+						//closeOrder($el.attr('rel'));
+						var $order = $('#order-'+$el.attr('rel'));
+						$order.addClass('closed');
+						$order.find('.controller').remove();
+						$order.find('.tile-body').html($el.find('.tile-body').html());
+						$order.find('.tile-body .order-control').addClass('order-details');
+						$order.find('.tile-body .order-middle').html($order.find(".order-header .order-quantity").html());
+						//$order.find('.tile-body .order-sections').removeClass('pull-left').addClass('pull-right');
+						$('#suborders-'+$el.attr('rel')).remove();
+						//setTimeout(function(){
+							$order.effect('highlight',3000,function(){ 
+								$order.remove();
+								appendNewTransaction(orders[$order.attr('id').replace('order-','')]);
+							});
+							//$order.fadeOut(); 
+						//},500);
+						//closeOrder(order_id);
+					}
+				});
+			}
+			e.preventDefault();
+		});
+	}
+
+	/************** market orders ***********/
+	if($("#market-orders-container").length>0) {
+		//getMarketOrders(true);
+	}
+	
+	/*************** chart ***************/
+	if($("#market-chart").length>0) {
+		var data = [];
+		socket.get('/home/chart', {}, function(response) {
+			//log(response);
+			if(response.success) {
+				for(var i=0;i<response.data.length;i++) {
+					var item = response.data[i];
+					var d = new Date();
+					var month = d.getMonth()+1;
+					data.push([moment(d.getFullYear()+'-'+(month>9?month:'0'+month)+'-'+d.getDate()+'T'+item.Tick+'.00Z').format('X')*1000, item.Open, item.Max, item.Min, item.Close]);
+				}
+				//log(data);
+			}
+chart1 = new Highcharts.StockChart({
+         chart: {
+            renderTo: 'market-chart',
+			type: 'candlestick'
+         },
+         rangeSelector : {
+			inputEnabled: $('#market-chart').width() > 480,
+			selected : 1
+		},
+        series : [{
+			type : 'candlestick',
+			name : 'Ring Regularizare Gaz',
+			data : data,
+			dataGrouping : {
+				units : [
+					['minute', // unit name
+					[1] // allowed multiples
+				], [
+					'hour', 
+					[9,10,11,12,13,14,15,16]]
+				]
+			}
+		}]
+      });
+		});
+	}
+
+});
+ 
+
+
+/****** application logic ************/
+
+$(function() {
+	$(window).focus(function() {
+		live = true;
+		log('focus');
+		// connect to socket
+		//socket.reconnect();
+		// reload everything
+	});
+
+	$(window).blur(function() {
+		live = false;
+		log('blur');
+		// disconnect socket
+		//socket.disconnect('buh bye!');
+	});
+});
+	
+$(document).ready(function(){
+
+	(function (io) {
+		var socket = io.connect();
+		//var socket = io.connect('/',{'sync disconnect on unload':true});
+		if (typeof console !== 'undefined') {
+			log('Connecting to Sails.js...');
+		}
+
+		socket.on('connect', function socketConnected() {
+
+			log("This is from the connect: ", this.socket.sessionid);
+	
+			socket.get('/home/subscribe', {sid:sid}, function gotResponse () {
+				log('subscribed to channel!');
+				$.event.trigger({type:'socketConnected'});
+			});
+		
+			socket.on('message', function messageReceived(message) {
+
+				///////////////////////////////////////////////////////////
+				// Replace the following with your own custom logic
+				// to run when a new message arrives from the Sails.js
+				// server.
+				///////////////////////////////////////////////////////////
+				log('New comet message received :: ', message);
+				console.log(message);
+				//////////////////////////////////////////////////////
+				if (message.model === 'chat'  && message.verb === 'create') {
+					appendNewMessage(message.data.item);
+					$("#chat-container .scroller").slimScroll({ scrollTo: $("#chat-list").outerHeight(true)+'px' });
+				}
+				if (message.model === 'marketorder'  && message.verb === 'create') {
+					appendNewMarketOrder(message.data);
+					$("#market-orders-container .scroller").slimScroll({ scrollTo: $("#market-orders-list").outerHeight(true)+'px' });
+				}
+				if (message.model === 'order'  && message.verb === 'create') {
+					processOrder(message.data.item);
+					/*if(message.data.item.ID_Broker == b_id)	appendNewOrder(message.data.item);
+					else appendNewMarketOrder(message.data.item);
+					*/
+				}
+				if (message.model === 'order'  && message.verb === 'update') {
+					processOrder(message.data.item);
+					/*if(message.data.item.ID_Broker == b_id)	appendNewOrder(message.data.item);
+					else appendNewMarketOrder(message.data.item);
+					*/
+				}
+			});
+		});
+		socket.on('disconnect', function disconnectSocket(message) {
+		 log('server disconnected :: ', message);
+		});
+		window.socket = socket;
+	})(window.io);
+});
+
+
+/************* view helper functions *******************/
+
+function getOrders(clear) {
+	socket.get('/orders/index', {all:true}, function(response) {
+		if(response.success) {
+			var $ordersList = $("#orders-list");
+			var $marketOrdersList = $("#market-orders-list");
+			if(response.data.length>0) {
+				if(clear) {
+					$ordersList.html('');
+					$marketOrdersList.html('');
+				}
+				/*
+				if(response.data.length<orders.length) {
+					for (var i=0;i<orders.length;i++) {
+						if(searchIdInArray(orders[i].ID,response.data)==-1) {
+							closeOrder(orders[i].ID);
+						}
+					}
+				}
+				*/
+				//var item,d;
+				for (var i=0;i<response.data.length;i++) {
+					//orders[response.data[i].ID] = response.data[i];
+					processOrder(response.data[i]);
+					//appendNewOrder(response.data[i]);
+				}
+			}
+			else {
+				if(clear) {
+					$ordersList.html('<div class="tiles white m-b-10 empty-message"><div class="tiles-body text-center">Nici un ordin disponibil.</div></div>');
+					$marketOrdersList.html('<li class="empty-message"><div class="text-center padding-10">Nici un ordin disponibil</div></li>');
+				}
+			}
+		}
+		else {
+			log('error loading orders ('+response.error+')');
+		}
+	});
+	/*
+	var t = setTimeout(function(){
+		getOrders(false);
+	},2000);
+	*/
+}
+
+function getTransactions(clear) {
+	socket.get('/transactions/index', {}, function(response) {
+		if(response.success) {
+			if(response.data.length>0) {
+				if(clear) {
+					$("#transactions-container .tile-body").html('<table class="table no-more-tables no-margin sorted" id="transaction-list">'+
+						'<thead>'+
+							'<tr>'+
+								'<td style="width:5%"><span class="muted">Tip</span></td>'+
+								'<td style="width:18%"><span class="muted">Client</span></td>'+
+								'<td style="width:22%"><span class="muted">Perioada</span></td>'+
+								'<td style="width:20%"><span class="muted">Cantitate</span></td>'+
+								'<td style="width:12%"><span class="muted">Pret</span></td>'+
+								'<td style="width:15%"><span class="muted">Raport</span></td>'+
+							'</tr>'+
+						'</thead>'+
+						'<tbody>'+
+						'</tbody>'+
+					'</table>');
+				}
+				for (var i=0;i<response.data.length;i++) {
+					appendNewTransaction(response.data[i]);
+				}
+				var t = setInterval(function(){
+					socket.get('/transactions/index', {}, function(response) {
+						if(response.success) {
+							if(response.data.length>0) {
+								for (var i=0;i<response.data.length;i++) {
+									appendNewTransaction(response.data[i]);
+								}
+								$("#transaction-list").tablesorter(); 
+							}
+						}
+						else {
+							log('error loading transactions ('+response.error+')');
+						}
+					});
+				},2000);
+			}
+			else {
+				if(clear) {
+					$("#transactions-container .tile-body").html('<div class="text-center">Nici o tranzactie disponibila.</div>');
+				}
+			}
+		}
+		else {
+			log('error loading transactions ('+response.error+')');
+		}
+	});
+}
+
+function getMarketOrders(clear) {
+	if(clear) $("#market-orders-list").html('<li><div class="text-center padding-10"><img src="/img/loader-white.gif" /></div></li>');
+	socket.get('/orders/index', {all:true}, function(response) {
+		if(response.success) {
+			if(response.data.length>0) {
+				var $list = $("#market-orders-list");
+				if(clear) $list.html('');
+				//$list.html('');
+				var changes = 0;
+				if(response.data.length<marketOrders.length) {
+					for (var i=0;i<marketOrders.length;i++) {
+						if(searchIdInArray(marketOrders[i].ID,response.data)==-1) {
+							closeMarketOrder(marketOrders[i].ID);
+							//changes--;
+						}
+					}
+				}
+				for(var i=0;i<response.data.length;i++) {
+					changes += appendNewMarketOrder(response.data[i]);
+				}
+				if(changes>0) {
+					var $scroller = $(".market-order-scroller");
+					if($scroller.height()>$scroller.attr("data-height")) {
+						$scroller.slimScroll({
+							size: '9px',
+							color: '#BFBFBF',
+							height: $(this).attr("data-height"),
+							railVisible: true,
+							railColor: '#F2F2F2',
+							opacity: 1,
+							railOpacity: 1,
+							alwaysVisible: true,
+							disableFadeOut: true
+						});
+					}
+					$scroller.slimScroll({ scrollTo: $list.outerHeight(true)+'px' });
+				}
+			}
+			else {
+				$("#market-orders-list").html('<li><div class="text-center padding-10">Nici un ordin disponibil</div></li>');
+			}
+		}
+		else {
+			log('error loading market orders ('+response.error+')');
+		}
+	});
+	/*
+	var t = setTimeout(function(){
+		getMarketOrders(false);
+		$("#market-orders-list li").each(function(elm){
+			if($(this).attr('id') && $(this).attr('id')!='' && searchIdInArray($(this).attr('id').replace('market-order-',''),orders)!=-1) $(this).addClass('self');
+			//if($.inArray($(this).attr('id').replace('market-order-',''),orders.indexOf()!=-1) $(this).addClass('self');
+		});
+	},1000);
+	*/
+}
+
+function getChatMessages(clear) {
+	socket.get('/chat', {since:$("#chat-list").attr('data-timestamp')}, function(response) {
+		if(response.success) {
+		//log(response.data);
+			$("#chat-list .loader").hide();
+			if(response.data && response.data.length>0) {
+				var $chatlist = $("#chat-list");
+				if(clear) $chatlist.html('');
+				for (var i=0;i<response.data.length;i++) {
+					appendNewMessage(response.data[i]);
+				}
+				$("#chat-container .scroller").slimScroll({ scrollTo: $("#chat-list").outerHeight(true)+'px' });
+			}
+		}
+		else {
+			log('error loading chat history ('+response.error+')');
+		}
+	});
+	/*var t = setTimeout(function(){
+		getChatMessages(false);
+	},1000);*/
+}
+	
+function getAlerts(clear) {
+	socket.get('/home/alerts', {}, function(response) {
+		if(response.success) {
+			if(response.data && response.data.length>0) {
+				var $alerts = $("#alerts-container");
+				var item = response.data[response.data.length-1];
+				if($("#alert-"+item.ID).length==0) {
+					if(clear) $alerts.html('');
+					$alerts.html('<p class="alert" id="alert-' + item.ID + '"><span class="muted">' + moment(item.Date).format("DD MMM HH:mm") + '</span> ' + item.Message + '</p>');
+					$alerts.effect('pulsate','slow');
+				}
+			}
+		}
+		else {
+			log('error loading alerts ('+response.error+')');
+		}
+	});
+	var t = setTimeout(function(){
+		getAlerts(true);
+	},2000);
+}
+	
+function appendNewMessage(item) {
+	if(typeof chat[item.ID]=='undefined') {	
+		chat[item.ID] = item;
+		$("#chat-list").attr('data-timestamp',item.Date);
+		$("#chat-list").append('<li class="chat-message" id="chat-item-' + item.ID + '"><div class="timestamp pull-left">' + item.Date.substr(11,5) + '</div><div class="message pull-left"><span class="message-owner">' + item.LoginName + ':</span> ' + item.Message + '</div></li>');
+		//$("#chat-container .scroller").slimScroll({ scrollTo: $("#chat-list").outerHeight(true)+'px' });
+	}
+	else log('message already exists!');
+}
+
+function appendMarketOrder(item) {
+	var d1 = new moment(item.StartDeliveryDate);
+	var d2 = new moment(item.EndDeliveryDate);
+	var html = '<li id="market-order-'+item.ID+'">'+
+		'<div class="market-order-col col-type">'+
+			(item.Direction=='B'?'Cumparare':'Vanzare')+
+			'</div>'+
+			'<div class="market-order-col col-date">'+
+				'<span>'+d1.format('DD MMM')+' - '+d2.format('DD MMM')+'</span>'+
+			'</div>'+
+			'<div class="market-order-col col-quantity">'+
+				item.Quantity+' <span class="muted">MWh</span>'+
+			'</div>'+
+			'<div class="market-order-col col-price">'+
+				item.Price+' <span class="muted">Lei</span>'+
+			'</div>'+
+			'<div class="market-order-col col-status">'+
+				'<span class="status-label' + (item.isSuspended?'':'-active') + '">' + (item.isSuspended?'suspendat':'activ') + '</span>'+
+			'</div>'+
+		'</li>';
+	if($("#market-order-"+item.ID).length>0) $("#market-order-"+item.ID).replaceWith(html);
+	else $("#market-orders-list").append(html);
+	//arrangeMarketOrders();
+	$("#market-order-"+item.ID).effect('highlight',2000);
+}
+
+function appendNewTransaction(item) {
+/*
+	if(searchIdInArray(item.ID_BuyOrder,orders)!=-1) {	
+		closeOrder(item.ID_BuyOrder);
+	}
+	if(searchIdInArray(item.ID_BuyOrder,marketOrders)!=-1) {	
+		closeMarketOrder(item.ID_BuyOrder);
+	}
+	if(searchIdInArray(item.ID_SellOrder,orders)!=-1) {
+		closeOrder(item.ID_SellOrder);
+	}
+	if(searchIdInArray(item.ID_SellOrder,marketOrders)!=-1) {
+		closeMarketOrder(item.ID_SellOrder);
+	}
+*/
+	if(searchIdInArray(item.ID,transactions)==-1) {
+		transactions.push(item);
+		var d = new moment(item.Date);
+		$("#transaction-list tbody").append('<tr>'+
+			'<td class="v-align-middle"><span class="' + (item.Direction=='S'?'sell':'buy') + ' semi-bold">' + (item.Direction=='S'?'V':'C') + '</span></td>'+
+			'<td class="v-align-middle">' + (item.Direction=='S'?item.BuyClient:item.SellClient) + '</span></td>'+
+			'<td class="v-align-middle">' + moment(item.StartDeliveryDate).format('DD MMM')+ ' - ' + moment(item.EndDeliveryDate).format('DD MMM') + '</td>'+
+			'<td class="v-align-middle">' + item.Quantity + ' <span class="muted">MWh</span></td>'+
+			'<td class="v-align-middle">' + item.Price + ' <span class="muted">Lei</span></td>'+
+			'<td class="v-align-middle"><a class="report" href="/reports/download/' + item.ID + '">BRM ' + item.ID + '</a></td>'+
+		'</tr>');
+		//$("#market-orders-list").append('<li class="chat-message"><div class="timestamp pull-left">' + item.Date.substr(11,5) + '</div><div class="message pull-left"><span class="message-owner">' + item.LoginName + ':</span> ' + item.Message + '</div></li>');
+	}
+}
+
+function closeOrder(id) {
+	var $order = $('#order-'+id);
+	var item = orders[searchIdInArray(id,orders)];
+	if(!$order.hasClass('closed')) {
+		if($order.hasClass("collapsed")) {
+			$order.find(".tile-body").show();
+			//if($(this).attr('rel')!='') $($(this).attr('rel')).show();
+			$order.removeClass("collapsed");
+			$order.find('.controller').remove();
+			$('#suborders-'+id).hide();
+		}
+		socket.get('/orders/transactions', {id:id}, function(combination) {
+			var html = '<div class="order-sections">';
+			var mean = 0,total = 0;
+			for(var i=0;i<combination.length;i++) {
+				mean += (combination[i].Quantity/item.Quantity)*combination[i].Price;
+				total += combination[i].Quantity*combination[i].Price;
+				html += '<div class="section section' + (i+1) + '" style="width:' + (combination[i].Quantity*100/item.Quantity) + '%">'+
+							'<div class="order-price"><strong>' + combination[i].Price + ' Lei</strong><br/>per MWh</div>'+
+							'<div class="order-quantity">' + combination[i].Quantity + ' MWh</div>'+
+							'<div class="order-company">' + moment(combination[i].StartDeliveryDate).format('DD/MM') + ' - ' + moment(combination[i].EndDeliveryDate).format('DD/MM') + '</div>'+
+						'</div>';
+			}
+			html += '</div>';
+			html += '<div class="order-control order-details">'+
+						'<div class="order-price"><span class="muted">Pret mediu</span><br/>' + Math.round(mean*100)/100 + ' Lei</div>'+
+						'<div class="order-middle">' + item.Quantity + 'MWh</div>'+
+						'<div class="order-price"><span class="muted">Total tranzactie</span><br/>' + total + ' Lei</div>'+
+					'</div>';
+			html += '<div class="clearfix"></div>'+
+				'</div>'+
+			'</div>';
+			$order.addClass('closed');
+			$order.find('.tile-body').html(html);
+			$order.effect('highlight',3000,function(){ 
+				$order.fadeOut().remove(); 
+				$('#suborders-'+id).remove();
+			});
+		});
+	//socket.get('/orders/accept', {id:$(this).attr('rel')}, function(response) {
+//		log(response);
+	//	if(response.success) {
+//			$order.find('.tile-body').html($el.find('.tile-body').html());
+
+			$order.find('.tile-body .order-details').removeClass('multiple').addClass('order-control').html('<div class="order-price"><span class="muted">Pret mediu</span><br/>' + item.Price + ' Lei</div>'+
+				'<div class="order-middle">' + item.Quantity + ' MWh</div>'+
+				'<div class="order-price"><span class="muted">Total tranzactie</span><br/>' + (item.Price*item.Quantity)+ ' Lei</div>'+
+			'');
+			$order.find('.tile-body').append('<div class="clearfix"></div>');
+			//$order.find('.tile-body .order-details').;
+			//$order.find('.tile-body .order-sections').removeClass('pull-left').addClass('pull-right');
+			//$el.parent().remove();
+			//setTimeout(function(){
+			//},500);
+	//	}
+	//});
+	}
+	arrangeOrders();
+}
+
+function closeMarketOrder(id) {
+	var $order = $('#market-order-'+id);
+	if(!$order.hasClass('closed')) {
+		$order.addClass('closed');
+		$order.find('.col-status').html('<span class="status-label">inchis</span>');
+		$order.effect('highlight',3000,function(){ 
+			$order.fadeOut(); 
+		});
+	}
+	arrangeMarketOrders();
+}
+function openMarketOrder(id) {
+	var $order = $('#market-order-'+id);
+	$order.find('.col-status').html('<span class="status-label-active">activ</span>');
+	$order.effect('highlight',3000,function(){ });
+}
+
+function suspendMarketOrder(id) {
+	var $order = $('#market-order-'+id);
+	$order.find('.col-status').html('<span class="status-label">suspendat</span>');
+	$order.effect('highlight',3000,function(){ });
+}
+
+function processOrder(item) {
+	if(searchIdInArray(item.ID,orders)==-1) {
+		log('processing new order');
+		// new order
+		if(!item.isActive) return false;
+		if(item.isTransacted) return false;
+		orders.push(item);
+		if(item.ID_Broker == b_id) appendOrder(item);
+		appendMarketOrder(item);
+	}
+	else {
+		//existing order
+		log('processing existing order');
+		var oldOrder = orders[searchIdInArray(item.ID,orders)];
+		if(oldOrder.isActive && item.isTransacted) {
+			//close order
+			if(item.ID_Broker == b_id) closeOrder(item.ID);
+			closeMarketOrder(item.ID);
+		}
+		else {
+			// change order
+			if(item.ID_Broker == b_id) appendOrder(item);
+			appendMarketOrder(item);
+		}
+		/*
+		else if(oldOrder.isSuspended == true && item.isSuspended == false) {
+			// open order
+			if(item.ID_Broker == b_id) openOrder(item);
+			else openMarketOrder(item);
+		}
+		else if(oldOrder.isSuspended == false && item.isSuspended == true) {
+			// suspend order
+			if(item.ID_Broker == b_id) suspendOrder(item);
+			else suspendMarketOrder(item);
+		}
+		else {
+			// change order
+			if(item.ID_Broker == b_id) appendOrder(item);
+			else appendMarketOrder(item);
+		}*/
+	}
+}
+
+function arrangeOrders() {
+	var $ordersList = $("#orders-list");
+	if($ordersList.children('.order').length==0) {
+		// nici un ordin disponibil
+		$ordersList.html('<div class="tiles white m-b-10 empty-message"><div class="tiles-body text-center">Nici un ordin disponibil.</div></div>');
+	}
+	else {
+		// remove empty message
+		$ordersList.find('.empty-message').remove();
+	}
+}
+function arrangeMarketOrders() {
+	var $marketOrdersList = $("#market-orders-list");
+	var $scroller = $(".market-order-scroller");
+	if($marketOrdersList.children('.market-order').length==0) {
+		// nici un ordin disponibil
+		$marketOrdersList.html('<li class="empty-message"><div class="text-center padding-10">Nici un ordin disponibil</div></li>');
+		// clear slider
+		$scroller.parent().replaceWith($scroller); 
+	}
+	else {
+		// remove empty message
+		$marketOrdersList.find('.empty-message').remove();
+		// reconstruct slider
+		if($scroller.height()>$scroller.attr("data-height")) {
+			$scroller.slimScroll({
+				size: '9px',
+				color: '#BFBFBF',
+				height: $(this).attr("data-height"),
+				railVisible: true,
+				railColor: '#F2F2F2',
+				opacity: 1,
+				railOpacity: 1,
+				alwaysVisible: true,
+				disableFadeOut: true
+			});
+			$scroller.slimScroll({ scrollTo: $list.outerHeight(true)+'px' });
+		}
+	}
+}
+
+function appendOrder(item) {
+	var d = new moment(item.Date);
+	var html = '<div class="tile m-b-10 order collapsed ' + (item.Direction=='S'?'sell':'buy') + '-order" id="order-' + item.ID + '" data-id="' + item.ID + '" '+(item.isSuspended?'style="opacity:0.5"':'')+'>'+
+		'<div class="corner"></div>'+
+		'<div class="order-label">' + (item.Direction=='S'?'V':'C') + '</div>'+
+		'<div class="tile-title">'+
+			'<div class="controller">'+
+				'<a href="" class="collapse pull-right m-l-15" rel="#suborders-' + item.ID + '">&nbsp;</a>'+
+				'<a class="btn btn-default btn-small pull-right" href="/orders/edit/' + item.ID + '">Modifica ordin</a>'+
+			'</div>'+
+			'<div class="order-header">'+
+				'<div class="order-quantity pull-left">' + item.Quantity + ' MWh</div>'+
+				'<div class="separator pull-left"></div>'+
+				'<div class="order-price pull-left">' + item.Price + ' Lei</div>'+
+				'<div class="separator pull-left"></div>'+
+				'<div class="order-period pull-left"><span class="muted">' + moment(item.StartDeliveryDate).format('DD MMM') + ' - ' + moment(item.EndDeliveryDate).format('DD MMM') + '</span></div>'+
+			'</div>'+
+		'</div>'+
+		'<div class="tile-body" style="display:none">'+
+			'<div class="order-details multiple">Netranzactionat</div>'+
+		'</div>'+
+	'</div><div class="suborders" id="suborders-' + item.ID + '" style="display:none"></div>';
+	/*
+		'<div class="market-order-col col-type">'+
+			(item.Direction=='B'?'Cumparare':'Vanzare')+
+			'</div>'+
+			'<div class="market-order-col col-date">'+
+				'<span>'+d.format('DD MMM YYYY')+'</span>'+
+			'</div>'+
+			'<div class="market-order-col col-quantity">'+
+				item.Quantity+' <span class="muted">MWh</span>'+
+			'</div>'+
+			'<div class="market-order-col col-price">'+
+				item.Price+' <span class="muted">Lei</span>'+
+			'</div>'+
+			'<div class="market-order-col col-status">'+
+				'<span class="status-label-active">activ</span>'+
+			'</div>'+
+		'</div>');
+		*/
+	if($("#order-"+item.ID).length>0) $("#order-"+item.ID).replaceWith(html);
+	else $("#orders-list").append(html);
+	socket.get('/orders/matches', {id:item.ID}, function(matches) {
+		//log(matches);
+		var $parent = $("#order-"+item.ID);
+		//$list.html('');
+		if(orders[searchIdInArray(item.ID,orders)].hasOwnProperty('matches') && JSON.stringify(matches) == JSON.stringify(orders[searchIdInArray(item.ID,orders)].matches)) return false;
+		else {
+			orders[searchIdInArray(item.ID,orders)].matches = matches;
+			if(matches.length>0) {
+				var combination,combinations={};
+				for (var i=0;i<matches.length;i++) {
+					if(!combinations.hasOwnProperty(matches[i].ID)) combinations[matches[i].ID] = [];
+					combinations[matches[i].ID].push(matches[i]);
+				}
+				log(combinations);
+				if(Object.keys(combinations).length>0) $parent.find(".order-details").html('Netranzactionat dar ai '+Object.keys(combinations).length+' variante posibile');
+				for (var i=0;i<Object.keys(combinations).length;i++) {
+					combination = combinations[Object.keys(combinations)[i]];
+					appendNewCombination(combination,item,i);
+				}
+			}
+		}
+	});
+	arrangeOrders();
+}
+
+function appendNewCombination(combination,item) {
+	var d = new moment(item.Date);
+	log(combination);
+	var html = '<div class="tile suborder ' + (item.Direction=='S'?'sell':'buy') + '-order" id="combination-' + combination[0].ID + '" rel="' + item.ID + '">'+
+		'<div class="tile-body">';
+	html += '<div class="order-sections">';
+	var mean = 0,total = 0;
+	for(var i=0;i<combination.length;i++) {
+		mean += (combination[i].Quantity/item.Quantity)*combination[i].Price;
+		total += combination[i].Quantity*combination[i].Price;
+		html += '<div class="section section' + (i+1) + '" style="width:' + (combination[i].Quantity*100/item.Quantity) + '%">'+
+					'<div class="order-price"><strong>' + combination[i].Price + ' Lei</strong><br/>per MWh</div>'+
+					'<div class="order-quantity">' + combination[i].Quantity + ' MWh</div>'+
+					'<div class="order-company">' + moment(combination[i].StartDeliveryDate).format('DD/MM') + ' - ' + moment(combination[i].EndDeliveryDate).format('DD/MM') + '</div>'+
+				'</div>';
+	}
+	html += '</div>';
+	html += '<div class="order-control">'+
+				'<div class="order-price"><span class="muted">Pret mediu</span><br/>' + Math.round(mean*100)/100 + ' Lei</div>'+
+				'<div class="order-middle"><a class="accept-order change-order btn btn-primary btn-small" rel="' + combination[0].ID + '">' + (item.Price<mean?'Modifica':'Accepta') + '</a></div>'+
+				'<div class="order-price"><span class="muted">Total tranzactie</span><br/>' + total + ' Lei</div>'+
+			'</div>';
+	/*
+				'<div class="section section2 pull-left" style="width:25%">'+
+					'<div class="order-price"><strong>' + item.Price + '</strong><br/>ND' + item.Price + '</div>'+
+					'<div class="order-quantity">' + item.Quantity + '</div>'+
+					'<div class="order-company">Companie</div>'+
+				'</div>'+
+				'<div class="section section3 pull-left" style="width:40%">'+
+					'<div class="order-price"><strong>' + item.Price + '</strong><br/>ND' + item.Price + '</div>'+
+					'<div class="order-quantity">' + item.Quantity + '</div>'+
+					'<div class="order-company">Companie</div>'+
+				'</div>'+
+	*/
+	html += '<div class="clearfix"></div>'+
+		'</div>'+
+	'</div>';
+	$("#suborders-"+item.ID).append(html);
+}

@@ -1,0 +1,29 @@
+<div class="tile white m-b-10" id="chat-container">
+	<div class="tile-title">
+		<div class="controller">
+			<a href="" class="collapse pull-right m-l-15" title="Minimize">&nbsp;</a>
+			<a href="" class="extract pull-right m-l-15" title="Deschide in popup"><i class="fa fa-external-link"></i></a>
+		</div>
+		<h3 class="no-margin m-b-10"><i class="fa fa-comments"></i> Chat panel</h3>
+	</div>
+	<div class="tile-body">
+		<div class="chat-holder">
+			<div class="chat-box-holder">
+				<div class="chat-box scroller" data-height="250">
+					<ul class="chat-list" id="chat-list" data-timestamp="">
+						<li class="loader">
+							<div class="text-center padding-20"><img src="/img/loader-white.gif"></div>
+						</li>
+					</ul>
+				</div>
+			</div>
+		<% if(accessService.checkOperation('dashboard_chat','addChatMessage',req)) { %>
+			<div class="row no-margin">
+				<div class="col-md-12">
+					<input type="text" id="chat-input" placeholder="Mesajul tau.." autocomplete="off" />
+				</div>
+			</div>
+		<% } %>
+		</div>
+	</div>	
+</div>	

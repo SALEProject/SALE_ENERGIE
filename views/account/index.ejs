@@ -1,0 +1,27 @@
+<div class="row">
+<div class="col-md-12">
+	<div class="tile white m-b-10 padding-20">
+		<div class="tile-title">
+			<div class="controller">
+				<a href="" class="collapse pull-right m-l-15">&nbsp;</a>
+			</div>
+			<h3 class="no-margin m-b-10"><%= title %></h4>
+		</div>
+		<div class="tile-body">
+			<ul class="profile-menu">
+			<% if(accessService.checkState('dashboard','myaccount_whitelist',req)) { %>
+				<li><a href="/account/whitelist" class="<%= (req.target.action=='whitelist'?'bold':'') %>"><i class="fa fa-tasks"></i> Whitelist (Parteneri)</a></li>
+			<% } %>
+			<% if(accessService.checkState('dashboard','myaccount_entrypoints',req)) { %>
+				<li><a href="/account/entrypoints" class="<%= (req.target.action=='entrypoints'?'bold':'') %>"><i class="fa fa-map-marker"></i> Puncte de intrare predefinite</a></li>
+			<% } %>
+			<% if(accessService.checkState('dashboard','myaccount_messages',req)) { %>
+				<li><a href="/account/notifications" class="<%= (req.target.action=='notifications'?'bold':'') %>"><i class="fa fa-comments"></i> Mesaje</a></li>
+			<% } %>
+			</ul>
+		<div class="clearfix"></div>
+		</div>	
+	</div>	
+</div>
+</div>
+

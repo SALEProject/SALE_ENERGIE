@@ -1,0 +1,90 @@
+    <div class="content">
+      <div class="page-title">
+		<i class="icon-custom-left"></i>
+        <h3>Jurnal activitate</h3>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="grid simple">
+            <div class="grid-title no-border">
+				<%- toolsService.getFlashMessage(req.flash()) %>
+			</div>
+            <div class="grid-body no-border">
+				<form class="form-no-horizontal-spacing" id="activity-form" method="" autocomplete="off">	
+					<input type="hidden" id="filter-ID_User" value="<%= currentUser %>" />
+					<input type="hidden" id="filter-ID_Agency" value="<%= currentAgency %>" />
+					<input type="hidden" id="filter-prm_startDate" value="<%= startDate %>" />
+					<h4>Filtre</h4>            
+					<div class="row form-row">
+						<div class="form-group col-md-3">
+							<label class="form-label"><%- __('Utilizator') %></label>
+							<div class="input-group">
+								<select name="user" id="ID_User" class="select2 form-control">
+								  <option value="" <%-(( currentUser!=null && currentUser=='')?'selected=""':'') %>>Toti utilizatorii</option>
+								  <% _.each(req.session.users,function(user) { %>
+								  <option value="<%= user.ID %>" <%-(( currentUser!=null && currentUser==user.ID)?'selected=""':'') %> /><%= user.FirstName+' '+user.LastName %></option>
+								  <% }); %>
+								</select>
+							</div>
+						</div>
+						<div class="form-group col-md-3">
+							<label class="form-label">Agentie</label>
+							<div class="input-group">
+								<select name="agency" id="ID_Agency" class="select2 form-control" data-placeholder="">
+								  <option value="" <%-(( currentAgency!=null && currentAgency=='')?'selected=""':'') %>>Toate agentiile</option>
+								  <% _.each(req.session.agencies,function(agency) { %>
+								  <option value="<%= agency.ID %>" <%-(( currentAgency!=null && currentAgency==agency.ID)?'selected=""':'') %> /><%= agency.AgencyName %></option>
+								  <% }); %>
+								</select>
+							</div>
+						</div>
+						<div class="form-group col-md-2">
+							<label class="form-label">Inceput</label>
+							<div class="input-group">
+								<input type="text" class="form-control required" id="prm_StartDate" name="startdate" data-date-format="yyyy-mm-dd" value="<%- startDate %>" />
+								<span class="input-group-addon primary">		
+									<span class="arrow"></span>
+									<i class="fa fa-align-justify"></i>		
+								</span>
+							</div>
+						</div>
+						<div class="form-group col-md-2">
+							<label class="form-label">&nbsp;</label>
+							<div class="input-group">
+						  <button class="btn btn-danger btn-cons" type="submit">Filtreaza</button>
+							</div>
+						</div>
+					</div>
+				</form>
+				<hr class="" />
+				<table class="table table-hover table-condensed admin-table" id="example-table">
+					<thead>
+						<tr>
+							<th>Data</th>
+							<th>Operatiune</th>
+							<th>Utilizator</th>
+							<th>Agentie</th>
+							<th>Ordin</th>
+							<th>Cantitate</th>
+							<th>Pret</th>
+						</tr>
+					</thead>
+					<tbody>
+						<% if(items.length>0) { _.each(items,function(item) { %>
+						<tr>
+							<td class="v-align-middle bold"><%= timeService.formatDate(item.Date,'YYYY-MM-DD HH:mm') %></td>
+							<td><span><%= item.Operation %></span></td>
+							<td><span><%= item.LoginName %></span></td>
+							<td><span><%= item.AgencyName %></span></td>
+							<td><span><%= item.ID_Order %></span></td>
+							<td><span><%= item.Quantity %></span></td>
+							<td><span><%= item.Price %></span></td>
+						</tr>
+						<% }); } %>
+					</tbody>
+				</table>
+			</div>
+          </div>
+        </div>
+      </div>
+    </div>
